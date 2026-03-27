@@ -1,0 +1,270 @@
+{
+  "app": {
+    "title": "OptimeFlow(s) 일관적 역학",
+    "titlePart1": "일관적",
+    "titlePart2": "역학",
+    "description": "OptimeFlow(s) 일관적 역학 · 구조적 펄스, 레벨, 내보내기, 오프라인 사용을 갖춘 CU 16×16 Sᵢ PWA 시뮬레이션."
+  },
+  "common": {
+    "close": "닫기",
+    "skip": "본문으로 건너뛰기"
+  },
+  "menu": {
+    "open": "메뉴",
+    "controlPanel": "제어 패널",
+    "language": "언어",
+    "themes": "테마",
+    "sixteenSi": "16개의 S(i)",
+    "whatSeeing": "지금 무엇을 보고 있나요?"
+  },
+  "panel": {
+    "title": "제어 패널",
+    "minimize": "최소화",
+    "expand": "확장",
+    "close": "닫기"
+  },
+  "languages": {
+    "es": "Español",
+    "en": "English",
+    "ptbr": "Português (BR)",
+    "ca": "Català",
+    "de": "Deutsch"
+  },
+  "buttons": {
+    "start": "시작",
+    "pause": "일시정지",
+    "step": "한 단계",
+    "slow": "느리게 (R)",
+    "reset": "리셋 (A)",
+    "export": "CSV 내보내기 (E)"
+  },
+  "labels": {
+    "level": "레벨",
+    "stepFps": "Step FPS",
+    "decimals": "소수 자릿수",
+    "drawMode": "그리기",
+    "view": "보기",
+    "group": "그룹",
+    "structuralFlow": "구조적 펄스"
+  },
+  "draw": {
+    "full": "전체",
+    "light": "가볍게"
+  },
+  "view": {
+    "all": "전체 (16)",
+    "single": "그룹"
+  },
+  "levels": {
+    "n0": "레벨 0",
+    "n1": "레벨 1",
+    "n2": "레벨 2",
+    "n3": "레벨 3",
+    "n4": "레벨 4",
+    "n5": "레벨 5",
+    "n6": "레벨 6",
+    "n7": "레벨 7",
+    "n8": "레벨 8",
+    "nM": "수동"
+  },
+  "numbers": {
+    "copy": "복사",
+    "copyTitle": "현재 표 복사",
+    "downloadCSV": "CSV 다운로드",
+    "downloadCSVTitle": "현재 표의 CSV 다운로드",
+    "showR": "r 보기 (r_usado/r_si)",
+    "logR": "r 기록",
+    "sinOff": "sin → off (가공 없는 r)",
+    "drawFormula": "공식 그리기 (Sᵢ)",
+    "exportRSnapshot": "r 내보내기 (스냅샷)",
+    "exportRSnapshotTitle": "현재 시점의 r_usado/r_si 내보내기",
+    "exportRLog": "r 내보내기 (로그)",
+    "exportRLogTitle": "‘r 기록’이 활성화된 경우 이력을 내보냅니다",
+    "exportStateLog": "상태 내보내기 (값+r)",
+    "exportStateLogTitle": "값+r 결합 이력을 내보냅니다 (‘r 기록’ 사용)"
+  },
+  "explain": {
+    "titlePrefix": "📘 모드 설명:",
+    "manualTitle": "\n<b>수동 – “제어된 시드 + 레벨 {{lvl}}”</b><br>\n• 16개의 시드(G1..G16)를 설정합니다.<br>\n• 레벨 {{lvl}}의 로직에 따라 진화합니다.<br>",
+    "levels": {
+      "0": "<b>레벨 0 – “최소 단일 시드”</b><br>• <code>G1·S1 = 0.000000000000010</code>만 주입됩니다(레벨 0 선택 시 자동 재시드).<br>• 내부 기억(로컬 누적 합)에 의해 그룹 1만 진화합니다.<br>• 최소한의 자극에서 고정점/진동을 관찰하는 데 유용합니다.<br>",
+      "1": "<b>레벨 1 – “사전 싱크로서의 S₁₆”</b><br>• 전역 <code>suma_s16_anterior</code>(이전 스텝).<br>• <code>r_usado</code> = inv(<code>suma_s16_anterior + acumulado_random_actual + r_iniciales_previos[g]</code>, “sin”).<br>• S₁ = sin(r_usado)(또는 <i>sin→off</i>일 때 r_usado). S₂..S₁₅: inv(<code>r_usado</code>, 공식) → sin(r).<br>• S₁₆ = 감쇠된 공식(또는 <i>sin→off</i>일 때 r_usado).<br>",
+      "2": "<b>레벨 2 – “균일한 전역 합”</b><br>• <code>suma_si_anterior[s]</code> 및 전역 합을 사용합니다.<br>• S₂..S₁₅: inv(<code>r_usado + suma_total_global</code>, 공식).<br>",
+      "3": "<b>레벨 3 – “위치별 점진적 합”</b><br>• 인덱스별 <code>suma_si_anterior[s]</code>.<br>• S₂..S₁₅: inv(<code>r_usado + Σ<sub>k≤s</sub> suma_si_anterior[k]</code>, 공식).<br>",
+      "4": "<b>레벨 4 – “점진적 합 + 3회전째부터 메모리”</b><br>• 레벨 3과 같지만, 3회전째부터 <code>si_valores_previos[g][s]</code>를 추가합니다.<br>",
+      "5": "<b>레벨 5 – “지속적 피드백”</b><br>• s에 따른 점진적 합이며 항상 <code>si_valores_previos[g][s]</code>를 더합니다.<br>",
+      "6": "<b>레벨 6 – “로컬 루프 S₁₆→S₁”</b><br>• <code>r_usado</code>는 해당 그룹의 <code>S₁₆</code>(이전 스텝)에 의존합니다.<br>• S₂..S₁₅는 로컬 내부 점진 합을 사용합니다.<br>",
+      "7": "<b>레벨 7 – “측면 결합(링)”</b><br>• 각 그룹은 인덱스별로 왼쪽 이웃에게서 값을 받습니다.<br>",
+      "8": "<b>레벨 8 – “내부 거울(교차)”</b><br>• S₂..S₁₅는 이전 스텝의 대칭 쌍 <code>sym=15−s</code>를 사용합니다.<br>"
+    }
+  },
+  "notes": {
+    "title": "📝 메모",
+    "placeholder": "여기에 메모를 작성하세요...",
+    "save": "저장",
+    "exportTxt": ".txt 내보내기",
+    "saved": "✔ 저장됨",
+    "saveError": "✖ 저장 오류"
+  },
+  "manual": {
+    "seedsTitle": "시드(수동): G1…G16",
+    "applySeeds": "시드 적용",
+    "demoG1": "데모: G1 = 0.000000000000010",
+    "clear": "지우기",
+    "runAtLevel": "다음 레벨에서 실행",
+    "hint": "팁: 작은 값(예: 0.0001 … 0.01)을 사용하세요. 허용 범위: ±0.99999999999999.",
+    "seedsApplied": "✔ 시드 적용됨"
+  },
+  "hud": {
+    "keys": "키: A=리셋, Space=재생/일시정지, E=내보내기, R=느리게, S=한 단계",
+    "off": "꺼짐",
+    "lines": {
+      "step": "STEP: {{step}}",
+      "seconds": "SECONDS: {{seconds}}",
+      "avgS1": "AVG S1: {{value}}",
+      "avgS16": "AVG S16: {{value}}",
+      "resonancias": "공명 수: {{count}}",
+      "lastKey": "마지막 키: {{key}}",
+      "slow": "감속기: {{state}}",
+      "flow": "흐름: {{mode}}"
+    }
+  },
+  "viewer": {
+    "singleTitle": "데이터 · 그룹 G{{g}}",
+    "table": {
+      "si": "Sᵢ",
+      "value": "값",
+      "r": "r"
+    }
+  },
+  "table": {
+    "corner": "S\\G",
+    "rPrefix": "r=",
+    "cellTitle": "S{{s}}/G{{g}} · 값={{val}}",
+    "cellTitleWithR": "S{{s}}/G{{g}} · 값={{val}} · r={{r}}"
+  },
+  "exports": {
+    "patterns": {
+      "label1": "라벨1",
+      "label2": "라벨2",
+      "label3": "라벨3",
+      "filename": "exported_patterns.csv"
+    },
+    "numbers": {
+      "snapshotCsv": "numbers_snapshot.csv",
+      "snapshotTsv": "numbers_snapshot.tsv"
+    },
+    "notes": {
+      "filename": "cu_notes.txt"
+    },
+    "r": {
+      "snapshot": "r_snapshot.csv",
+      "log": "r_log.csv",
+      "stateLog": "state_val_r_log.csv"
+    },
+    "columns": {
+      "step": "step",
+      "group": "group",
+      "rUsed": "r_used",
+      "value": "value",
+      "r": "r"
+    }
+  },
+  "themes": {
+    "dark": "Dark",
+    "midnight": "Midnight",
+    "violet": "Violet",
+    "emerald": "Emerald",
+    "amber": "Amber",
+    "rose": "Rose",
+    "ocean": "Ocean",
+    "mono": "Mono"
+  },
+  "footer": {
+    "appName": "일관적 역학",
+    "author": "Andrés Calvo Espinosa",
+    "privacyBtn": "개인정보",
+    "mitBtn": "MIT"
+  },
+  "dialogs": {
+    "coherence": {
+      "title": "보편적 일관성",
+      "text": "이 작업이 감사와 헌신의 표현이 되기를 바랍니다. 꾸밈없이 같은 방향으로 생각하고, 느끼고, 행동하며, 우리를 연결하는 모든 것에 대한 윤리와 기쁨, 존중 속에서 계속 창조하기를 바랍니다."
+    },
+    "privacy": {
+      "title": "개인정보",
+      "body": "<p><strong>OptimeFlow(s) · 일관적 역학</strong>은 100% 로컬(브라우저 내)에서 실행됩니다. 입력한 값은 외부 서버로 전송되지 않으며, 분석 도구나 추적기도 사용하지 않습니다.</p><h4>이 기기에 저장되는 데이터</h4><ul><li><strong>환경설정</strong>: 시각 테마와 언어.</li><li><strong>메모</strong>: 사용자가 저장하면 <em>localStorage</em>에 저장됩니다.</li><li><strong>수동 시드</strong>: 재사용을 위해 <em>localStorage</em>에 저장됩니다.</li><li><strong>오프라인 캐시</strong>(PWA로 설치한 경우): 브라우저가 앱 파일을 저장하여 오프라인으로 열 수 있습니다.</li></ul><h4>브라우저 권한</h4><ul><li><strong>클립보드</strong>: “복사”를 눌렀을 때만 사용됩니다.</li><li><strong>저장공간</strong>: 환경설정, 메모, 시드를 <em>localStorage</em>에 저장하기 위해 사용됩니다.</li></ul><h4>데이터 삭제 방법</h4><p>브라우저 설정에서 사이트 데이터(저장공간/localStorage 및 캐시)를 지우거나, 설치한 경우 PWA를 제거하면 모든 데이터를 삭제할 수 있습니다.</p>"
+    },
+    "mit": {
+      "title": "MIT 라이선스",
+      "text": "MIT License\n\nCopyright (c) 2026 OptimeFlow(s) by Andrés Calvo Espinosa\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."
+    },
+    "language": {
+      "title": "언어",
+      "description": "인터페이스 언어를 선택하세요. 아직 제공되지 않는 언어는 스페인어로 표시됩니다."
+    },
+    "themes": {
+      "title": "테마",
+      "description": "시각 테마를 선택하세요. 전체 앱에 적용되며 이 기기에 기억됩니다."
+    },
+    "si16": {
+      "title": "16개의 S(i)",
+      "body": "<div class=\"dialog-section\">\n  <p><strong>16개의 S(i)</strong>는 Universal Coherence 프로젝트가 <em>현상을 단절된 조각으로 분해하지 않고</em> 이질적인 현상을 설명하려는 동적 모델입니다. 이것들은 고립된 “단계”나 닫힌 교리로 제시되는 것이 아니라, 시스템이 어떻게 추진되고, 유지되고, 재조직되며, 임계값을 넘고, 공명에 들어가고, 더 복잡한 통합 수준에 도달하는지를 읽기 위한 <strong>최소 기능 문법</strong>으로 제시됩니다.</p>\n  <p>이 글은 언제나 서로 보완적인 두 개의 층위를 구분합니다. 하나는 <strong>기능적 층위</strong>로, 각 S(i)는 시스템 동역학 안에서 보편적 역할을 수행합니다. 다른 하나는 <strong>표상적 층위</strong>로, 각 기능은 동역학을 시뮬레이션하고 가시화하는 데 도움이 되는 수학적 계열로 시각화될 수 있지만, 표상을 현상 자체와 결코 혼동하지 않습니다.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>어떻게 배열되는가</h4>\n  <p>이 모델은 블록 단위로 조직됩니다. <strong>S₁–S₄</strong>는 진동적 기반을 이룹니다: 최소 추진, 집합화, 무결성, 동적 균형. <strong>S₅–S₈</strong>은 기억, 스케일링, 분산, 임계값을 도입합니다. <strong>S₉–S₁₂</strong>는 작동 핵과 적응-공명 구역을 모읍니다: 동적 축적, 가소성, 조율, 상호연결. <strong>S₁₃–S₁₆</strong>은 복합 조직화, 흐름 관리, 구조적 지지, 최대 통합 투사를 표현합니다.</p>\n  <p>간단히 말해, 16개의 S(i)는 “예쁜 라벨 붙이기”를 하려는 것이 아니라, 어떤 순간에 시스템이 무엇을 하고 있는지, 그리고 그 층들이 어떻게 서로 관계하는지를 구조적으로 읽어내기 위한 틀을 제공합니다.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>구조적 펄스의 핵심</h4>\n  <p>이 글의 작동적 해석에서 <strong>S₉</strong>는 중심을 차지합니다. 그것은 동적 축적, 유효한 역사, 발화의 핵, 재동기화의 지점입니다. 그래서 실제 동역학은 단순한 <code>S₁ → … → S₁₆</code> 선으로만 이해되지 않습니다. 본문은 두 가지 상보적 읽기를 제안합니다.</p>\n  <ul>\n    <li><strong>순차적 읽기:</strong> 모델 전체 전개의 설명, 정렬, 교육적 서술에 유용합니다.</li>\n    <li><strong>구조적 펄스:</strong> S₉는 S₁과 S₁₆을 직접 발화시키고, 이후 시스템은 두 개의 동시 경로를 통해 다시 S₉로 돌아옵니다: <code>S₁ → S₂ → … → S₈ → S₉</code> 그리고 <code>S₁₆ → S₁₅ → … → S₁₀ → S₉</code>.</li>\n  </ul>\n  <p>따라서 양 끝은 서사적 의미의 “시작과 끝”이 아니라 <strong>기능적 극점</strong>입니다. 중간 기능들은 최초 발화의 경로가 아니라, 시스템이 핵으로 되돌아가고 재조정되며 일관성을 유지하게 하는 재통합 채널입니다.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>무엇을 읽어낼 수 있는가</h4>\n  <p>이 모델은 모든 현상이 동일한 학문 언어를 사용해야 한다고 요구하지 않으면서도 물리적, 생물학적, 사회적, 인지적, 상징적 현상을 매핑하는 데 쓸 수 있습니다. 비교되는 것은 “마법적” 본질이 아니라 <strong>관계의 아키텍처</strong>입니다. 아래로부터의 지지, 위로부터의 조절, 재귀성, 임계값, 공명, 재분배, 재조직화 능력, 그리고 결실의 기준이 그것입니다.</p>\n  <p>이 의미에서 16개의 S(i)는 프레임워크의 작동 모듈로 기능합니다. 구조적 직관을 보다 정돈되고 시각화 가능하며 대조 가능한 탐구로 옮겨가도록 도와줍니다.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>이 PWA와의 관계</h4>\n  <p>이 앱은 이 모델을 <strong>시각적·계산적 컨테이너</strong>로 사용합니다. 화면에 보이는 것은 행동을 탐색하고, 경로를 비교하며, 동역학을 가시화하기 위한 휴리스틱 구현입니다. 시각화가 논문 전체를 대체하는 것은 아니며, 시드, 레벨, 귀환, 펄스, 공명, 중간값, 읽기 모드를 관찰할 수 있는 상호작용 환경으로 번역한 것입니다.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>프레임워크 관련 논문</h4>\n  <div class=\"essay-links\">\n    <article class=\"essay-link-card\">\n      <strong>16개의 동시 구조 기능 (S(i))</strong>\n      <span class=\"doi\">DOI: 10.5281/zenodo.18751249</span>\n      <a href=\"https://zenodo.org/records/18751249\" target=\"_blank\" rel=\"noopener\">Zenodo 레코드 열기</a>\n      <a href=\"https://doi.org/10.5281/zenodo.18751249\" target=\"_blank\" rel=\"noopener\">DOI 열기</a>\n    </article>\n    <article class=\"essay-link-card\">\n      <strong>보편적 일관성(CU)의 존재론적·인식론적 기초</strong>\n      <span class=\"doi\">DOI: 10.5281/zenodo.18702121</span>\n      <a href=\"https://zenodo.org/records/18702121\" target=\"_blank\" rel=\"noopener\">Zenodo 레코드 열기</a>\n      <a href=\"https://doi.org/10.5281/zenodo.18702121\" target=\"_blank\" rel=\"noopener\">DOI 열기</a>\n    </article>\n    <article class=\"essay-link-card\">\n      <strong>제한 정밀도의 보편적 일관성 척도</strong>\n      <span class=\"doi\">DOI: 10.5281/zenodo.18714577</span>\n      <a href=\"https://zenodo.org/records/18714577\" target=\"_blank\" rel=\"noopener\">Zenodo 레코드 열기</a>\n      <a href=\"https://doi.org/10.5281/zenodo.18714577\" target=\"_blank\" rel=\"noopener\">DOI 열기</a>\n    </article>\n  </div>\n</div>"
+    },
+    "whatSeeing": {
+      "title": "지금 무엇을 보고 있나요?",
+      "statusTitle": "시뮬레이션의 현재 상태",
+      "body": "<div class=\"dialog-section\">\n  <p>지금 보고 있는 것은 <strong>16개 그룹 × 16개 함수의 상호작용 시뮬레이션</strong>입니다. 각 열 <code>G1…G16</code>은 하나의 그룹 또는 궤적을, 각 행 <code>S1…S16</code>은 그 그룹 안의 하나의 구조 기능을 나타냅니다. 앱은 시스템을 단계별로 다시 계산하며 동시에 두 가지를 보여줍니다. <strong>수치 값</strong>과 <strong>시각적 형상</strong>입니다.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>1. 상단 숫자 밴드</h4>\n  <p>위쪽의 큰 표는 시스템의 살아 있는 상태입니다. 각 셀은 그룹 <code>Gⱼ</code> 안의 함수 <code>Sᵢ</code>의 현재 <code>값</code>을 보여줍니다. <strong>r 보기</strong>를 켜면 각 셀 아래에 그 순간 해당 함수에 내부적으로 사용된 관련 <code>r</code>도 함께 표시됩니다.</p>\n  <p>이 영역에서 표를 복사하고, CSV로 다운로드하고, <code>r</code> 스냅샷을 내보내고, 이력을 기록하며, 값 + <code>r</code>의 결합 로그를 생성할 수 있습니다.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>2. 제어 패널</h4>\n  <p>플로팅 패널은 시뮬레이션의 동작을 제어합니다. <strong>시작</strong>, <strong>일시정지</strong>, <strong>한 단계</strong>, <strong>느리게</strong>, <strong>리셋</strong>은 실행 리듬을 제어합니다. <strong>레벨</strong>은 그룹과 메모리 사이의 결합 로직을 바꿉니다. <strong>Step FPS</strong>는 앱이 초당 몇 단계를 수행할지 정합니다. <strong>소수 자릿수</strong>는 표시 정밀도를 조정합니다.</p>\n  <p><strong>구조적 펄스</strong> 체크는 흐름의 해석 방식을 바꿉니다. 꺼져 있으면 <code>S₁ → … → S₁₆</code>의 상승 읽기를 유지하고, 켜져 있으면 논문에 설명된 펄스를 사용합니다. 즉 <code>S₉</code>에서 시작해 <code>S₁</code>과 <code>S₁₆</code>을 직접 발화시키고, 다시 핵으로 수렴하여 돌아옵니다.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>3. 설명 패널</h4>\n  <p>왼쪽에는 현재 활성 레벨에 대한 맥락 설명이 표시됩니다. 이 패널은 그 모드에서 어떤 종류의 메모리, 결합, 귀환이 사용되는지 요약합니다. <strong>수동</strong>을 선택하면 <code>G1…G16</code>의 초기값을 직접 지정할 수 있도록 시드 블록이 추가로 열립니다.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>4. 캔버스 / 중앙 시각화기</h4>\n  <p>시각화기는 각 그룹을 동심 타원들의 계열로 그립니다. <strong>전체 (16)</strong> 보기에서는 각 그룹이 4×4 격자의 한 칸을 차지합니다. <strong>그룹</strong> 보기에서는 하나의 그룹만 분리되어 표시되며, 해당 그룹의 정확한 데이터를 담은 옆 표가 함께 나타납니다.</p>\n  <p>각 선의 크기는 사용자가 그리기 기준으로 선택한 내부 크기에서 계산됩니다. <strong>공식 그리기 (Sᵢ)</strong>가 꺼져 있으면 캔버스는 <code>r</code>의 크기를 사용합니다. 켜져 있으면 각 함수의 계산된 공식 값을 사용합니다. 색은 레벨과 그룹을 구분하는 데 쓰이고, 기하는 층이 어떻게 팽창하고 감쇠하며 재배열되는지를 감지하는 데 쓰입니다.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>5. 시각화기 HUD</h4>\n  <p>시각화기 오른쪽 위에는 빠른 읽기를 위한 HUD가 있습니다. <strong>STEP</strong>, <strong>SECONDS</strong>, <code>S1</code> 평균, <code>S16</code> 평균, <strong>공명</strong> 수, 현재 활성 흐름, 마지막 키, 감속기 상태가 표시됩니다. 이 구현에서 공명 카운터는 한 그룹이 <code>S16</code>과 <code>S1</code>에 대해 정의된 내부 범위 안에 동시에 들어갈 때 증가합니다.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>6. 읽기 도구</h4>\n  <ul>\n    <li><strong>r 보기</strong>: 함수별로 사용된 <code>r</code>을 표시합니다.</li>\n    <li><strong>r 기록</strong>: 내보낼 수 있는 이력을 저장합니다.</li>\n    <li><strong>sin → off</strong>: 일반적인 삼각함수 출력으로 보내지 않고 “가공 없는” <code>r</code>을 보여줍니다.</li>\n    <li><strong>공식 그리기 (Sᵢ)</strong>: 캔버스의 그리기 기준을 바꿉니다.</li>\n    <li><strong>수동</strong>: 각 그룹에 시드를 주고, 선택한 레벨의 로직을 이후 실행할 수 있게 합니다.</li>\n    <li><strong>메모</strong>: 관찰, 가설, 해석을 기록하는 로컬 노트를 제공합니다.</li>\n  </ul>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>7. 층위를 혼동하지 않고 화면 읽기</h4>\n  <p>이 PWA는 “대상 그 자체”를 제시하려는 것이 아니라 패턴을 탐색하기 위한 <strong>상호작용 컨테이너</strong>입니다. 수치는 추적 가능성을 주고, 시각은 형태 지각을 주며, 레벨은 상호작용 논리를 바꾸고, 구조적 펄스는 상승 시퀀스가 <em>어떻게 경험되는지</em>와 핵으로의 귀환이 <em>어떻게 작동하는지</em>를 비교하게 해 줍니다.</p>\n  <p>요약하면, 위쪽에는 정량화된 상태가, 중앙에는 동적 형태가, 왼쪽에는 맥락적 해석이, 오른쪽에는 읽기의 기억이 있습니다. 모든 것은 로컬에서 단계적으로 실행되므로, 최종 결과만이 아니라 과정으로서의 시스템 일관성을 관찰할 수 있습니다.</p>\n</div>",
+      "status": {
+        "runState": "상태",
+        "step": "Step",
+        "seconds": "초",
+        "level": "활성 레벨",
+        "flow": "활성 흐름",
+        "view": "현재 보기",
+        "stepFps": "Step FPS",
+        "decimals": "소수 자릿수",
+        "showR": "r 보기",
+        "logR": "r 기록",
+        "sinOff": "sin → off",
+        "drawBasis": "그리기 기준",
+        "slow": "감속기"
+      },
+      "statusValues": {
+        "running": "실행 중",
+        "paused": "일시정지됨"
+      },
+      "flags": {
+        "on": "켜짐",
+        "off": "꺼짐"
+      },
+      "drawBasisValues": {
+        "formula": "공식 Sᵢ",
+        "r": "연관된 r"
+      },
+      "manualDerivedLevel": "레벨 {{lvl}} 로직 실행 중"
+    },
+    "mobileWarning": {
+      "title": "모바일 안내",
+      "body": "<p><strong>OptimeFlow(s) 일관적 역학</strong>은 <strong>데스크톱</strong> 사용을 염두에 두고 설계되었습니다. 캔버스 시각화, 전체 숫자 밴드, 플로팅 패널, 세밀한 상호작용은 아직 모바일에 최적화되어 있지 않습니다.</p><p>휴대폰이나 태블릿에서도 열어 내용을 확인할 수는 있지만, 제대로 작업하고 비교하며 본래 의도대로 보려면 컴퓨터 사용을 권장합니다.</p>",
+      "cta": "확인"
+    }
+  },
+  "toasts": {
+    "langFallback": "아직 번역이 제공되지 않아 스페인어를 사용합니다.",
+    "panelHidden": "제어 패널이 숨겨졌습니다",
+    "panelShown": "제어 패널이 보입니다",
+    "flowLinear": "순차 읽기 S₁→S₁₆ 활성",
+    "flowStructural": "구조적 펄스 S₉→(S₁,S₁₆)→S₉ 활성",
+    "offlineReady": "오프라인 사용을 위한 PWA 준비 완료.",
+    "pwaInstalled": "PWA가 정상적으로 설치되었습니다."
+  },
+  "flow": {
+    "hint": "S₉가 S₁과 S₁₆을 발화시키고, 귀환은 다시 S₉로 수렴합니다.",
+    "modeLinear": "상승 읽기 S₁→S₁₆",
+    "modeStructural": "펄스 S₉→(S₁,S₁₆)→S₉",
+    "noteLinear": "<div class=\"flowNote\"><b>순차 읽기 활성</b><br>시뮬레이션은 체험적·교육적 읽기로서 S₁ → … → S₁₆의 상승 경로를 유지합니다.</div>",
+    "noteStructural": "<div class=\"flowNote\"><b>구조적 펄스 활성</b><br>시뮬레이션은 S₉에서 시작해 S₁과 S₁₆을 직접 발화시키고, S₂…S₈과 S₁₅…S₁₀을 거쳐 핵으로 돌아옵니다.</div>",
+    "patternEntry": "펄스"
+  }
+}

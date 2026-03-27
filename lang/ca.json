@@ -1,0 +1,279 @@
+{
+  "app": {
+    "title": "OptimeFlow(s) Dinàmiques Coherents",
+    "titlePart1": "Dinàmiques",
+    "titlePart2": "Coherents",
+    "description": "OptimeFlow(s) Dinàmiques Coherents · simulació PWA CU 16×16 Sᵢ amb pols estructural, nivells, exportació i ús fora de línia."
+  },
+  "common": {
+    "close": "Tancar",
+    "skip": "Saltar al contingut"
+  },
+  "menu": {
+    "open": "Menú",
+    "controlPanel": "Panell de Control",
+    "language": "Idioma",
+    "themes": "Temes",
+    "sixteenSi": "Les 16 S(i)",
+    "whatSeeing": "Què estic veient?"
+  },
+  "panel": {
+    "title": "Panell de Control",
+    "minimize": "Minimitzar",
+    "expand": "Expandir",
+    "close": "Tancar"
+  },
+  "languages": {
+    "es": "Espanyol",
+    "en": "English",
+    "ptbr": "Portuguès (BR)",
+    "ca": "Català",
+    "de": "Deutsch",
+    "it": "Italiano",
+    "ko": "한국어",
+    "ja": "日本語",
+    "zh": "中文",
+    "fr": "Français",
+    "ru": "Русский",
+    "hi": "हिन्दी"
+  },
+  "buttons": {
+    "start": "Iniciar",
+    "pause": "Pausar",
+    "step": "Pas",
+    "slow": "Alentir (R)",
+    "reset": "Reiniciar (A)",
+    "export": "Exporta CSV (E)"
+  },
+  "labels": {
+    "level": "Nivell",
+    "stepFps": "Step FPS",
+    "decimals": "Decimals",
+    "drawMode": "Dibuixar",
+    "view": "Vista",
+    "group": "Grup",
+    "structuralFlow": "Pols estructural"
+  },
+  "draw": {
+    "full": "Complet",
+    "light": "Lleuger"
+  },
+  "view": {
+    "all": "Tots (16)",
+    "single": "Grup"
+  },
+  "levels": {
+    "n0": "Level 0",
+    "n1": "Level 1",
+    "n2": "Level 2",
+    "n3": "Level 3",
+    "n4": "Level 4",
+    "n5": "Level 5",
+    "n6": "Level 6",
+    "n7": "Level 7",
+    "n8": "Level 8",
+    "nM": "Manual"
+  },
+  "numbers": {
+    "copy": "Copiar",
+    "copyTitle": "Copia la taula actual",
+    "downloadCSV": "Descarrega CSV",
+    "downloadCSVTitle": "Descarrega el CSV de la taula actual",
+    "showR": "Veure r (r_usat/r_si)",
+    "logR": "Registrar r",
+    "sinOff": "sin → off (r “nu”)",
+    "drawFormula": "Dibuixar fórmula (Sᵢ)",
+    "exportRSnapshot": "Exporta r (instantània)",
+    "exportRSnapshotTitle": "Exporta r_usat/r_si de l’instant",
+    "exportRLog": "Exporta r (log)",
+    "exportRLogTitle": "Exporta l’històric si està actiu “Registrar r”",
+    "exportStateLog": "Exporta estat (val+r)",
+    "exportStateLogTitle": "Exporta l’històric combinat valor+r (usa “Registrar r”)"
+  },
+  "explain": {
+    "titlePrefix": "📘 Explicació del mode:",
+    "manualTitle": "\n<b>Manual – “Sembra controlada + Nivell {{lvl}}”</b><br>\n• Configura 16 llavors (G1..G16).<br>\n• Evolució segons la lògica del Nivell {{lvl}}.<br>",
+    "levels": {
+      "0": "<b>Level 0 – “Minimal single seed”</b><br>• Only <code>G1·S1 = 0.000000000000010</code> is injected (auto‑reseed when selecting Level 0).<br>• Only group 1 evolves through internal memory (local progressive sum).<br>• Useful for observing anchors/oscillations with minimal excitation.<br>",
+      "1": "<b>Level 1 – “S₁₆ as previous sink”</b><br>• Global <code>suma_s16_anterior</code> (previous step).<br>• <code>r_usado</code> = inv(<code>suma_s16_anterior + acumulado_random_actual + r_iniciales_previos[g]</code>, “sin”).<br>• S₁ = sin(r_usado) (or r_usado if <i>sin→off</i>). S₂..S₁₅: inv(<code>r_usado</code>, formula) → sin(r).<br>• S₁₆ = attenuated formula (or r_usado if <i>sin→off</i>).<br>",
+      "2": "<b>Level 2 – “Uniform global sum”</b><br>• <code>suma_si_anterior[s]</code> and global sum.<br>• S₂..S₁₅: inv(<code>r_usado + suma_total_global</code>, formula).<br>",
+      "3": "<b>Level 3 – “Progressive sum by position”</b><br>• <code>suma_si_anterior[s]</code> by index.<br>• S₂..S₁₅: inv(<code>r_usado + Σ<sub>k≤s</sub> suma_si_anterior[k]</code>, formula).<br>",
+      "4": "<b>Level 4 – “Progressive + memory from 3rd cycle”</b><br>• Like level 3, adding <code>si_valores_previos[g][s]</code> from the 3rd cycle onward.<br>",
+      "5": "<b>Level 5 – “Continuous feedback”</b><br>• Progressive by s and always adds <code>si_valores_previos[g][s]</code>.<br>",
+      "6": "<b>Level 6 – “Local loop S₁₆→S₁”</b><br>• <code>r_usado</code> depends on the same group’s <code>S₁₆</code> (previous step).<br>• S₂..S₁₅ with local internal progressive sum.<br>",
+      "7": "<b>Level 7 – “Lateral coupling (ring)”</b><br>• Each group receives from the left neighbor by index.<br>",
+      "8": "<b>Level 8 – “Internal mirror (cross)”</b><br>• S₂..S₁₅ use their symmetric pair <code>sym=15−s</code> from the previous step.<br>"
+    }
+  },
+  "notes": {
+    "title": "📝 Notes",
+    "placeholder": "Escriu aquí les teves anotacions...",
+    "save": "Desar",
+    "exportTxt": "Exporta .txt",
+    "saved": "✔ Desat",
+    "saveError": "✖ Error en desar"
+  },
+  "manual": {
+    "seedsTitle": "Llavors (Manual): G1…G16",
+    "applySeeds": "Aplicar llavors",
+    "demoG1": "Demo: G1 = 0.000000000000010",
+    "clear": "Netejar",
+    "runAtLevel": "Executar al nivell",
+    "hint": "Consell: usa valors petits (p. ex., 0.0001 … 0.01). Rang admès: ±0.99999999999999.",
+    "seedsApplied": "✔ Llavors aplicades",
+    "invalid": "✖ Valor no vàlid a G{{g}}",
+    "seedLabel": "Llavor G{{g}}"
+  },
+  "hud": {
+    "keys": "Tecles: A=Reset, Espai=Play/Pause, E=Exporta, R=Alentir, S=Pas",
+    "off": "off",
+    "lines": {
+      "step": "STEP: {{step}}",
+      "seconds": "SECONDS: {{seconds}}",
+      "avgS1": "AVG S1: {{value}}",
+      "avgS16": "AVG S16: {{value}}",
+      "resonancias": "RESONANCES: {{count}}",
+      "lastKey": "Last key: {{key}}",
+      "slow": "Slowdown: {{state}}",
+      "flow": "Flow: {{mode}}"
+    }
+  },
+  "viewer": {
+    "singleTitle": "Dades · Grup G{{g}}",
+    "table": {
+      "si": "Sᵢ",
+      "value": "valor",
+      "r": "r"
+    }
+  },
+  "table": {
+    "corner": "S\\G",
+    "rPrefix": "r=",
+    "cellTitle": "S{{s}}/G{{g}} · valor={{val}}",
+    "cellTitleWithR": "S{{s}}/G{{g}} · valor={{val}} · r={{r}}"
+  },
+  "exports": {
+    "patterns": {
+      "label1": "Label1",
+      "label2": "Label2",
+      "label3": "Label3",
+      "filename": "exported_patterns.csv"
+    },
+    "numbers": {
+      "snapshotCsv": "numbers_snapshot.csv",
+      "snapshotTsv": "numbers_snapshot.tsv"
+    },
+    "notes": {
+      "filename": "cu_notes.txt"
+    },
+    "r": {
+      "snapshot": "r_snapshot.csv",
+      "log": "r_log.csv",
+      "stateLog": "state_val_r_log.csv"
+    },
+    "columns": {
+      "step": "step",
+      "group": "group",
+      "rUsed": "r_used",
+      "value": "value",
+      "r": "r"
+    }
+  },
+  "themes": {
+    "dark": "Dark",
+    "midnight": "Midnight",
+    "violet": "Violet",
+    "emerald": "Emerald",
+    "amber": "Amber",
+    "rose": "Rose",
+    "ocean": "Ocean",
+    "mono": "Mono"
+  },
+  "footer": {
+    "appName": "Dinàmiques Coherents",
+    "author": "Andrés Calvo Espinosa",
+    "privacyBtn": "Privacitat",
+    "mitBtn": "MIT"
+  },
+  "dialogs": {
+    "coherence": {
+      "title": "Coherència Universal",
+      "text": "Que aquesta obra serveixi com a agraïment i com a compromís: pensar, sentir i actuar en la mateixa direcció, sense “ornaments”; continuar creant amb ètica, amb alegria i amb coratge."
+    },
+    "privacy": {
+      "title": "Privacitat",
+      "body": "<p><strong>OptimeFlow(s) · Dinàmiques Coherents</strong> funciona 100% en local (al teu navegador). No enviem a servidors externs els valors que introdueixes ni utilitzem analítica o rastrejadors.</p><h4>Dades que es guarden en aquest dispositiu</h4><ul><li><strong>Preferències</strong>: tema visual i idioma.</li><li><strong>Notes</strong>: es guarden a <em>localStorage</em> si decideixes fer-ho.</li><li><strong>Llavors manuals</strong>: es guarden a <em>localStorage</em> per reutilitzar-les.</li><li><strong>Memòria cau offline</strong> (si la instal·les com a PWA): el navegador pot emmagatzemar fitxers de l’app per obrir-la sense connexió.</li></ul><h4>Permisos del navegador</h4><ul><li><strong>Porta-retalls</strong>: només s’utilitza quan prems “Copiar”.</li><li><strong>Emmagatzematge</strong>: per desar preferències, notes i llavors a <em>localStorage</em>.</li></ul><h4>Com esborrar les teves dades</h4><p>Pots eliminar-ho tot des de la configuració del navegador (dades del lloc: emmagatzematge/localStorage i memòria cau) o desinstal·lant la PWA, si la vas instal·lar.</p>"
+    },
+    "mit": {
+      "title": "MIT License",
+      "text": "MIT License\n\nCopyright (c) 2026 OptimeFlow(s) by Andrés Calvo Espinosa\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."
+    },
+    "language": {
+      "title": "Idioma",
+      "description": "Tria l’idioma de la interfície. Si un idioma encara no està disponible, s’utilitzarà Espanyol."
+    },
+    "themes": {
+      "title": "Temes",
+      "description": "Tria un tema visual. S’aplica a tota l’app i es recordarà en aquest dispositiu."
+    },
+    "si16": {
+      "title": "Les 16 S(i)",
+      "body": "<div class=\"dialog-section\">\n  <p><strong>Les 16 S(i)</strong> són el model dinàmic amb què el Projecte Coherència Universal intenta descriure fenòmens heterogenis <em>sense fragmentar-los en peces inconnexes</em>. No apareixen com a “etapes” aïllades ni com una doctrina tancada, sinó com una <strong>gramàtica funcional mínima</strong> per llegir com un sistema s’impulsa, se sosté, es reorganitza, creua llindars, entra en ressonància i assoleix graus d’integració més complexos.</p>\n  <p>L’assaig distingeix sempre dos plans complementaris. D’una banda, el <strong>pla funcional</strong>: cada S(i) compleix un paper universal dins la dinàmica del sistema. De l’altra, el <strong>pla representacional</strong>: cada funció es pot visualitzar mitjançant famílies matemàtiques que ajuden a simular i fer visible la dinàmica, sense confondre mai la representació amb el fenomen mateix.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>Com s’ordenen</h4>\n  <p>El model s’organitza per blocs. <strong>S₁–S₄</strong> constitueixen la base vibracional: impuls mínim, agregació, integritat i equilibri dinàmic. <strong>S₅–S₈</strong> introdueixen memòria, escalat, dispersió i llindar. <strong>S₉–S₁₂</strong> recullen el nucli operatiu i la zona adaptativa-resonant: acumulació dinàmica, plasticitat, sintonia i interconnexió. <strong>S₁₃–S₁₆</strong> expressen organització complexa, gestió de fluxos, suport estructural i projecció màxima integrada.</p>\n  <p>Dit de manera senzilla: les 16 S(i) no busquen “posar etiquetes boniques”, sinó oferir una lectura estructural del que està fent un sistema en cada moment i de com es relacionen les seves capes.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>La clau del pols estructural</h4>\n  <p>En la lectura operativa de l’assaig, <strong>S₉</strong> ocupa el centre: és acumulació dinàmica, història efectiva, nucli de dispar i punt de resincronització. Per això la dinàmica real no s’entén només com una línia <code>S₁ → … → S₁₆</code>. El text proposa dues lectures complementàries:</p>\n  <ul>\n    <li><strong>Lectura seqüencial:</strong> útil per a l’exposició, l’ordenació i la descripció pedagògica del desplegament complet del model.</li>\n    <li><strong>Pols estructural:</strong> S₉ activa de manera directa S₁ i S₁₆; després el sistema retorna a S₉ per dues trajectòries simultànies: <code>S₁ → S₂ → … → S₈ → S₉</code> i <code>S₁₆ → S₁₅ → … → S₁₀ → S₉</code>.</li>\n  </ul>\n  <p>Així, els extrems no són “origen i final” en sentit narratiu, sinó <strong>extrems funcionals</strong>. I les funcions intermèdies no són el camí del dispar inicial, sinó els canals de reintegració mitjançant els quals el sistema torna al nucli, es reajusta i sosté coherència.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>Què permeten llegir</h4>\n  <p>El model serveix per mapar fenòmens físics, biològics, socials, cognitius o simbòlics sense exigir que tots parlin el mateix llenguatge disciplinari. El que es compara no és una essència “màgica”, sinó una <strong>arquitectura de relacions</strong>: suport des de baix, regulació des de dalt, recursivitat, llindars, ressonàncies, redistribució, capacitat de reorganització i criteri de fruit.</p>\n  <p>En aquest sentit, les 16 S(i) funcionen com un mòdul operatiu del marc: ajuden a passar de la intuïció estructural a una exploració més ordenada, visualitzable i contrastable.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>Relació amb aquesta PWA</h4>\n  <p>Aquesta app pren el model com a <strong>contenidor visual i computacional</strong>. El que veus a la pantalla és una implementació heurística per explorar el comportament, comparar recorreguts i fer visible la dinàmica. La visualització no exhaureix l’assaig: el tradueix a un entorn interactiu on pots observar llavors, nivells, retorn, pols, ressonàncies, valors intermedis i modes de lectura.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>Assaigs del marc</h4>\n  <div class=\"essay-links\">\n    <article class=\"essay-link-card\">\n      <strong>Les 16 Funcions Estructurals Simultànies (S(i))</strong>\n      <span class=\"doi\">DOI: 10.5281/zenodo.18751249</span>\n      <a href=\"https://zenodo.org/records/18751249\" target=\"_blank\" rel=\"noopener\">Obrir registre a Zenodo</a>\n      <a href=\"https://doi.org/10.5281/zenodo.18751249\" target=\"_blank\" rel=\"noopener\">Obrir DOI</a>\n    </article>\n    <article class=\"essay-link-card\">\n      <strong>Fonaments ontològics i epistemològics de la Coherència Universal (CU)</strong>\n      <span class=\"doi\">DOI: 10.5281/zenodo.18702121</span>\n      <a href=\"https://zenodo.org/records/18702121\" target=\"_blank\" rel=\"noopener\">Obrir registre a Zenodo</a>\n      <a href=\"https://doi.org/10.5281/zenodo.18702121\" target=\"_blank\" rel=\"noopener\">Obrir DOI</a>\n    </article>\n    <article class=\"essay-link-card\">\n      <strong>L’Escala de Coherència Universal de Precisió Limitada</strong>\n      <span class=\"doi\">DOI: 10.5281/zenodo.18714577</span>\n      <a href=\"https://zenodo.org/records/18714577\" target=\"_blank\" rel=\"noopener\">Obrir registre a Zenodo</a>\n      <a href=\"https://doi.org/10.5281/zenodo.18714577\" target=\"_blank\" rel=\"noopener\">Obrir DOI</a>\n    </article>\n  </div>\n</div>"
+    },
+    "whatSeeing": {
+      "title": "Què estic veient?",
+      "statusTitle": "Estat actual de la simulació",
+      "body": "<div class=\"dialog-section\">\n  <p>El que estàs veient és una <strong>simulació interactiva de 16 grups × 16 funcions</strong>. Cada columna <code>G1…G16</code> representa un grup o trajectòria; cada fila <code>S1…S16</code> representa una funció estructural dins d’aquest grup. L’app recalcula el sistema pas a pas i et mostra dues coses alhora: <strong>valors numèrics</strong> i <strong>forma visual</strong>.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>1. Banda superior de nombres</h4>\n  <p>La taula gran de dalt és l’estat viu del sistema. Cada cel·la mostra el <code>valor</code> actual d’una funció <code>Sᵢ</code> dins d’un grup <code>Gⱼ</code>. Si actives <strong>Veure r</strong>, cada cel·la afegeix a sota el <code>r</code> associat utilitzat internament per a aquella funció en aquell instant.</p>\n  <p>Des d’aquesta mateixa banda pots copiar la taula, descarregar-la en CSV, exportar instantànies de <code>r</code>, registrar l’històric i obtenir un log combinat de valors + <code>r</code>.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>2. Panell de Control</h4>\n  <p>El panell flotant governa el comportament de la simulació. <strong>Iniciar</strong>, <strong>Pausar</strong>, <strong>Pas</strong>, <strong>Alentir</strong> i <strong>Reiniciar</strong> controlen el ritme. <strong>Nivell</strong> canvia la lògica d’acoblament entre grups i memòries. <strong>Step FPS</strong> fixa quants passos per segon intenta executar l’app. <strong>Decimals</strong> ajusta la precisió visible.</p>\n  <p>El check <strong>Pols estructural</strong> canvia la lectura del flux: desactivat manté la lectura ascendent <code>S₁ → … → S₁₆</code>; activat usa el pols descrit a l’assaig, amb arrencada a <code>S₉</code>, activació directa de <code>S₁</code> i <code>S₁₆</code>, i retorn convergent al nucli.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>3. Panell d’explicació</h4>\n  <p>A l’esquerra apareix una explicació contextual del nivell actiu. Aquest panell resumeix quin tipus de memòria, acoblament o retorn està fent servir la simulació en aquest mode. Si tries <strong>Manual</strong>, s’obre a més el bloc de llavors perquè puguis fixar tu mateix els valors inicials de <code>G1…G16</code>.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>4. Canvas / visualitzador central</h4>\n  <p>El visualitzador dibuixa cada grup com una família d’el·lipses concèntriques. A la vista <strong>Tots (16)</strong>, cada grup ocupa una cel·la de la graella 4×4. A la vista <strong>Grup</strong>, se n’aïlla només un i apareix també una taula lateral amb les dades exactes d’aquest grup.</p>\n  <p>La mida de cada traç es calcula a partir de la magnitud interna que hagis triat per dibuixar. Si <strong>Dibuixar fórmula (Sᵢ)</strong> està desactivat, el canvas fa servir la magnitud de <code>r</code>. Si està activat, fa servir el valor de fórmula calculat per a cada funció. Els colors ajuden a diferenciar nivells i grups; la geometria ajuda a percebre com s’expandeixen, s’amorteixen o es reordenen les capes.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>5. HUD del visualitzador</h4>\n  <p>A la cantonada superior del visualitzador veus un HUD amb lectura ràpida: <strong>STEP</strong>, <strong>SECONDS</strong>, mitjana de <code>S1</code>, mitjana de <code>S16</code>, nombre de <strong>RESONÀNCIES</strong>, flux actiu, última tecla i estat de l’alentidor. En aquesta implementació, el comptador de ressonàncies augmenta quan un grup cau simultàniament dins dels rangs interns definits per a <code>S16</code> i <code>S1</code>.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>6. Eines de lectura</h4>\n  <ul>\n    <li><strong>Veure r</strong>: mostra el <code>r</code> utilitzat per funció.</li>\n    <li><strong>Registrar r</strong>: desa un històric exportable.</li>\n    <li><strong>sin → off</strong>: mostra un <code>r</code> “nu” en lloc de passar-lo per la sortida trigonomètrica habitual.</li>\n    <li><strong>Dibuixar fórmula (Sᵢ)</strong>: canvia la base de dibuix del canvas.</li>\n    <li><strong>Manual</strong>: et permet sembrar cada grup i després executar la lògica del nivell que seleccionis.</li>\n    <li><strong>Notes</strong>: et dona un quadern local per documentar observacions, hipòtesis o lectures.</li>\n  </ul>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>7. Com llegir la pantalla sense confondre plans</h4>\n  <p>La PWA no pretén ser “la cosa” mateixa, sinó un <strong>contenidor interactiu</strong> per explorar patrons. El pla numèric et dona traçabilitat; el visual et dona percepció de forma; el nivell et canvia la lògica d’interacció; i el pols estructural et permet comparar <em>com es viu</em> una seqüència ascendent i <em>com funciona</em> el retorn al nucli.</p>\n  <p>En resum: a dalt veus l’estat quantificat, al centre veus la forma dinàmica, a l’esquerra veus la interpretació contextual i a la dreta conserves memòria de lectura. Tot funciona en local, pas a pas, perquè puguis observar la coherència del sistema com a procés i no només com a resultat final.</p>\n</div>",
+      "status": {
+        "runState": "Estat",
+        "step": "Pas",
+        "seconds": "Segons",
+        "level": "Nivell actiu",
+        "flow": "Flux actiu",
+        "view": "Vista actual",
+        "stepFps": "Step FPS",
+        "decimals": "Decimals",
+        "showR": "Veure r",
+        "logR": "Registrar r",
+        "sinOff": "sin → off",
+        "drawBasis": "Base de dibuix",
+        "slow": "Alentidor"
+      },
+      "statusValues": {
+        "running": "En marxa",
+        "paused": "Pausada"
+      },
+      "flags": {
+        "on": "actiu",
+        "off": "desactivat"
+      },
+      "drawBasisValues": {
+        "formula": "fórmula Sᵢ",
+        "r": "r associat"
+      },
+      "manualDerivedLevel": "executant la lògica del nivell {{lvl}}"
+    },
+    "mobileWarning": {
+      "title": "Avís per a mòbil",
+      "body": "<p><strong>OptimeFlow(s) Dinàmiques Coherents</strong> està pensada per a <strong>Desktop</strong>. La visualització del canvas, la banda completa de nombres, el panell flotant i la interacció fina encara no estan adaptats per a mòbil.</p><p>En telèfon o tauleta la pots obrir i consultar continguts, però per treballar-la bé i veure-la tal com va ser concebuda, convé usar ordinador.</p>",
+      "cta": "Entès"
+    }
+  },
+  "toasts": {
+    "langFallback": "Traducció encara no disponible; s’utilitza Espanyol.",
+    "panelHidden": "Panell de Control ocult",
+    "panelShown": "Panell de Control visible",
+    "flowLinear": "Lectura seqüencial S₁→S₁₆ activa",
+    "flowStructural": "Pols estructural S₉→(S₁,S₁₆)→S₉ actiu",
+    "offlineReady": "PWA a punt per usar-se fora de línia.",
+    "pwaInstalled": "PWA instal·lada correctament."
+  },
+  "flow": {
+    "hint": "S₉ activa S₁ i S₁₆, i el retorn convergeix de nou a S₉.",
+    "modeLinear": "Lectura ascendent S₁→S₁₆",
+    "modeStructural": "Pols S₉→(S₁,S₁₆)→S₉",
+    "noteLinear": "<div class=\"flowNote\"><b>Lectura seqüencial activa</b><br>La simulació manté el recorregut ascendent S₁ → … → S₁₆ com a lectura experiencial i pedagògica.</div>",
+    "noteStructural": "<div class=\"flowNote\"><b>Pols estructural actiu</b><br>La simulació comença a S₉, activa directament S₁ i S₁₆ i retorna al nucli per S₂…S₈ i S₁₅…S₁₀.</div>",
+    "patternEntry": "Pols"
+  }
+}

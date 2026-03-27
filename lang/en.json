@@ -1,0 +1,270 @@
+{
+  "app": {
+    "title": "OptimeFlow(s) Coherent Dynamics",
+    "titlePart1": "Coherent",
+    "titlePart2": "Dynamics",
+    "description": "OptimeFlow(s) Coherent Dynamics · CU 16×16 Sᵢ PWA simulation with structural pulse, levels, export, and offline use."
+  },
+  "common": {
+    "close": "Close",
+    "skip": "Skip to content"
+  },
+  "menu": {
+    "open": "Menu",
+    "controlPanel": "Control Panel",
+    "language": "Language",
+    "themes": "Themes",
+    "sixteenSi": "The 16 S(i)",
+    "whatSeeing": "What am I seeing?"
+  },
+  "panel": {
+    "title": "Control Panel",
+    "minimize": "Minimize",
+    "expand": "Expand",
+    "close": "Close"
+  },
+  "languages": {
+    "es": "Español",
+    "en": "English",
+    "ptbr": "Português (BR)",
+    "ca": "Català",
+    "de": "Deutsch"
+  },
+  "buttons": {
+    "start": "Start",
+    "pause": "Pause",
+    "step": "Step",
+    "slow": "Slow down (R)",
+    "reset": "Reset (A)",
+    "export": "Export CSV (E)"
+  },
+  "labels": {
+    "level": "Level",
+    "stepFps": "Step FPS",
+    "decimals": "Decimals",
+    "drawMode": "Draw",
+    "view": "View",
+    "group": "Group",
+    "structuralFlow": "Structural pulse"
+  },
+  "draw": {
+    "full": "Full",
+    "light": "Light"
+  },
+  "view": {
+    "all": "All (16)",
+    "single": "Group"
+  },
+  "levels": {
+    "n0": "Level 0",
+    "n1": "Level 1",
+    "n2": "Level 2",
+    "n3": "Level 3",
+    "n4": "Level 4",
+    "n5": "Level 5",
+    "n6": "Level 6",
+    "n7": "Level 7",
+    "n8": "Level 8",
+    "nM": "Manual"
+  },
+  "numbers": {
+    "copy": "Copy",
+    "copyTitle": "Copy current table",
+    "downloadCSV": "Download CSV",
+    "downloadCSVTitle": "Download CSV of the current table",
+    "showR": "Show r (r_used/r_si)",
+    "logR": "Log r",
+    "sinOff": "sin → off (\"bare\" r)",
+    "drawFormula": "Draw formula (Sᵢ)",
+    "exportRSnapshot": "Export r (snapshot)",
+    "exportRSnapshotTitle": "Export r_used/r_si for the current instant",
+    "exportRLog": "Export r (log)",
+    "exportRLogTitle": "Export the history if 'Log r' is active",
+    "exportStateLog": "Export state (val+r)",
+    "exportStateLogTitle": "Export combined value+r history (uses 'Log r')"
+  },
+  "explain": {
+    "titlePrefix": "📘 Mode explanation:",
+    "manualTitle": "\n<b>Manual – “Controlled seeding + Level {{lvl}}”</b><br>\n• Configure 16 seeds (G1..G16).<br>\n• Evolution follows the logic of Level {{lvl}}.<br>\n",
+    "levels": {
+      "0": "<b>Level 0 – “Minimal single seed”</b><br>• Only <code>G1·S1 = 0.000000000000010</code> is injected (auto‑reseed when selecting Level 0).<br>• Only group 1 evolves through internal memory (local progressive sum).<br>• Useful for observing anchors/oscillations with minimal excitation.<br>",
+      "1": "<b>Level 1 – “S₁₆ as previous sink”</b><br>• Global <code>suma_s16_anterior</code> (previous step).<br>• <code>r_usado</code> = inv(<code>suma_s16_anterior + acumulado_random_actual + r_iniciales_previos[g]</code>, “sin”).<br>• S₁ = sin(r_usado) (or r_usado if <i>sin→off</i>). S₂..S₁₅: inv(<code>r_usado</code>, formula) → sin(r).<br>• S₁₆ = attenuated formula (or r_usado if <i>sin→off</i>).<br>",
+      "2": "<b>Level 2 – “Uniform global sum”</b><br>• <code>suma_si_anterior[s]</code> and global sum.<br>• S₂..S₁₅: inv(<code>r_usado + suma_total_global</code>, formula).<br>",
+      "3": "<b>Level 3 – “Progressive sum by position”</b><br>• <code>suma_si_anterior[s]</code> by index.<br>• S₂..S₁₅: inv(<code>r_usado + Σ<sub>k≤s</sub> suma_si_anterior[k]</code>, formula).<br>",
+      "4": "<b>Level 4 – “Progressive + memory from 3rd cycle”</b><br>• Like level 3, adding <code>si_valores_previos[g][s]</code> from the 3rd cycle onward.<br>",
+      "5": "<b>Level 5 – “Continuous feedback”</b><br>• Progressive by s and always adds <code>si_valores_previos[g][s]</code>.<br>",
+      "6": "<b>Level 6 – “Local loop S₁₆→S₁”</b><br>• <code>r_usado</code> depends on the same group’s <code>S₁₆</code> (previous step).<br>• S₂..S₁₅ with local internal progressive sum.<br>",
+      "7": "<b>Level 7 – “Lateral coupling (ring)”</b><br>• Each group receives from the left neighbor by index.<br>",
+      "8": "<b>Level 8 – “Internal mirror (cross)”</b><br>• S₂..S₁₅ use their symmetric pair <code>sym=15−s</code> from the previous step.<br>"
+    }
+  },
+  "notes": {
+    "title": "📝 Notes",
+    "placeholder": "Write your notes here...",
+    "save": "Save",
+    "exportTxt": "Export .txt",
+    "saved": "✔ Saved",
+    "saveError": "✖ Error while saving"
+  },
+  "manual": {
+    "seedsTitle": "Seeds (Manual): G1…G16",
+    "applySeeds": "Apply seeds",
+    "demoG1": "Demo: G1 = 0.000000000000010",
+    "clear": "Clear",
+    "runAtLevel": "Run at level",
+    "hint": "Tip: use small values (e.g., 0.0001 … 0.01). Allowed range: ±0.99999999999999.",
+    "seedsApplied": "✔ Seeds applied"
+  },
+  "hud": {
+    "keys": "Keys: A=Reset, Space=Play/Pause, E=Export, R=Slow down, S=Step",
+    "off": "off",
+    "lines": {
+      "step": "STEP: {{step}}",
+      "seconds": "SECONDS: {{seconds}}",
+      "avgS1": "AVG S1: {{value}}",
+      "avgS16": "AVG S16: {{value}}",
+      "resonancias": "RESONANCES: {{count}}",
+      "lastKey": "Last key: {{key}}",
+      "slow": "Slowdown: {{state}}",
+      "flow": "Flow: {{mode}}"
+    }
+  },
+  "viewer": {
+    "singleTitle": "Data · Group G{{g}}",
+    "table": {
+      "si": "Sᵢ",
+      "value": "value",
+      "r": "r"
+    }
+  },
+  "table": {
+    "corner": "S\\G",
+    "rPrefix": "r=",
+    "cellTitle": "S{{s}}/G{{g}} · value={{val}}",
+    "cellTitleWithR": "S{{s}}/G{{g}} · value={{val}} · r={{r}}"
+  },
+  "exports": {
+    "patterns": {
+      "label1": "Label1",
+      "label2": "Label2",
+      "label3": "Label3",
+      "filename": "exported_patterns.csv"
+    },
+    "numbers": {
+      "snapshotCsv": "numbers_snapshot.csv",
+      "snapshotTsv": "numbers_snapshot.tsv"
+    },
+    "notes": {
+      "filename": "cu_notes.txt"
+    },
+    "r": {
+      "snapshot": "r_snapshot.csv",
+      "log": "r_log.csv",
+      "stateLog": "state_val_r_log.csv"
+    },
+    "columns": {
+      "step": "step",
+      "group": "group",
+      "rUsed": "r_used",
+      "value": "value",
+      "r": "r"
+    }
+  },
+  "themes": {
+    "dark": "Dark",
+    "midnight": "Midnight",
+    "violet": "Violet",
+    "emerald": "Emerald",
+    "amber": "Amber",
+    "rose": "Rose",
+    "ocean": "Ocean",
+    "mono": "Mono"
+  },
+  "footer": {
+    "appName": "Coherent Dynamics",
+    "author": "Andrés Calvo Espinosa",
+    "privacyBtn": "Privacy",
+    "mitBtn": "MIT"
+  },
+  "dialogs": {
+    "coherence": {
+      "title": "Universal Coherence",
+      "text": "May this work serve as gratitude and commitment: to think, feel, and act in the same direction, without \"ornaments\"; to keep creating with ethics, joy, and respect for everything that connects us."
+    },
+    "privacy": {
+      "title": "Privacy",
+      "body": "<p><strong>OptimeFlow(s) · Coherent Dynamics</strong> runs 100% locally (in your browser). We do not send the values you enter to external servers, nor do we use analytics or trackers.</p><h4>Data stored on this device</h4><ul><li><strong>Preferences</strong>: visual theme and language.</li><li><strong>Notes</strong>: stored in <em>localStorage</em> if you choose to save them.</li><li><strong>Manual seeds</strong>: stored in <em>localStorage</em> for reuse.</li><li><strong>Offline cache</strong> (if you install it as a PWA): the browser may store app files so it can open without connection.</li></ul><h4>Browser permissions</h4><ul><li><strong>Clipboard</strong>: only used when you press “Copy”.</li><li><strong>Storage</strong>: to save preferences, notes, and seeds in <em>localStorage</em>.</li></ul><h4>How to delete your data</h4><p>You can delete everything from the browser settings (site data: storage/localStorage and cache) or by uninstalling the PWA, if you installed it.</p>"
+    },
+    "mit": {
+      "title": "MIT License",
+      "text": "MIT License\n\nCopyright (c) 2026 OptimeFlow(s) by Andrés Calvo Espinosa\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."
+    },
+    "language": {
+      "title": "Language",
+      "description": "Choose the interface language. If a language is not available yet, Spanish will be used."
+    },
+    "themes": {
+      "title": "Themes",
+      "description": "Choose a visual theme. It applies to the whole app and will be remembered on this device."
+    },
+    "si16": {
+      "title": "The 16 S(i)",
+      "body": "<div class=\"dialog-section\">\n  <p><strong>The 16 S(i)</strong> are the dynamic model through which the Universal Coherence Project seeks to describe heterogeneous phenomena <em>without fragmenting them into disconnected pieces</em>. They do not appear as isolated “stages” or as a closed doctrine, but rather as a <strong>minimal functional grammar</strong> for reading how a system is driven, sustained, reorganized, crosses thresholds, enters resonance, and reaches more complex degrees of integration.</p>\n  <p>The essay always distinguishes two complementary planes. On the one hand, the <strong>functional plane</strong>: each S(i) fulfills a universal role within the system’s dynamics. On the other, the <strong>representational plane</strong>: each function can be visualized through mathematical families that help simulate and make the dynamics visible, without ever confusing the representation with the phenomenon itself.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>How they are ordered</h4>\n  <p>The model is organized in blocks. <strong>S₁–S₄</strong> form the vibrational base: minimal impulse, aggregation, integrity, and dynamic balance. <strong>S₅–S₈</strong> introduce memory, scaling, dispersion, and threshold. <strong>S₉–S₁₂</strong> gather the operational core and the adaptive-resonant zone: dynamic accumulation, plasticity, tuning, and interconnection. <strong>S₁₃–S₁₆</strong> express complex organization, flow management, structural support, and maximum integrated projection.</p>\n  <p>Put simply: the 16 S(i) do not seek to “attach pretty labels”, but to offer a structural reading of what a system is doing at each moment and how its layers relate to one another.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>The key of the structural pulse</h4>\n  <p>In the essay’s operational reading, <strong>S₉</strong> occupies the center: it is dynamic accumulation, effective history, trigger core, and resynchronization point. That is why the real dynamics are not understood only as a line <code>S₁ → … → S₁₆</code>. The text proposes two complementary readings:</p>\n  <ul>\n    <li><strong>Sequential reading:</strong> useful for exposition, ordering, and pedagogical description of the model’s full deployment.</li>\n    <li><strong>Structural pulse:</strong> S₉ directly triggers S₁ and S₁₆; afterward, the system returns to S₉ through two simultaneous paths: <code>S₁ → S₂ → … → S₈ → S₉</code> and <code>S₁₆ → S₁₅ → … → S₁₀ → S₉</code>.</li>\n  </ul>\n  <p>Thus, the extremes are not “origin and end” in a narrative sense, but <strong>functional extremes</strong>. And the intermediate functions are not the path of the initial trigger, but the reintegration channels through which the system returns to the core, readjusts itself, and sustains coherence.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>What they make it possible to read</h4>\n  <p>The model serves to map physical, biological, social, cognitive, or symbolic phenomena without requiring them all to speak the same disciplinary language. What is compared is not a “magical” essence, but an <strong>architecture of relationships</strong>: support from below, regulation from above, recursivity, thresholds, resonances, redistribution, capacity for reorganization, and criterion of fruit.</p>\n  <p>In that sense, the 16 S(i) work as an operational module of the framework: they help move from structural intuition to a more orderly, visualizable, and testable exploration.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>Relation to this PWA</h4>\n  <p>This app takes the model as a <strong>visual and computational container</strong>. What you see on screen is a heuristic implementation for exploring behavior, comparing paths, and making the dynamics visible. The visualization does not exhaust the essay: it translates it into an interactive environment where you can observe seeds, levels, return, pulse, resonances, intermediate values, and reading modes.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>Framework essays</h4>\n  <div class=\"essay-links\">\n    <article class=\"essay-link-card\">\n      <strong>The 16 Simultaneous Structural Functions (S(i))</strong>\n      <span class=\"doi\">DOI: 10.5281/zenodo.18751249</span>\n      <a href=\"https://zenodo.org/records/18751249\" target=\"_blank\" rel=\"noopener\">Open record on Zenodo</a>\n      <a href=\"https://doi.org/10.5281/zenodo.18751249\" target=\"_blank\" rel=\"noopener\">Open DOI</a>\n    </article>\n    <article class=\"essay-link-card\">\n      <strong>Ontological and epistemological foundations of Universal Coherence (CU)</strong>\n      <span class=\"doi\">DOI: 10.5281/zenodo.18702121</span>\n      <a href=\"https://zenodo.org/records/18702121\" target=\"_blank\" rel=\"noopener\">Open record on Zenodo</a>\n      <a href=\"https://doi.org/10.5281/zenodo.18702121\" target=\"_blank\" rel=\"noopener\">Open DOI</a>\n    </article>\n    <article class=\"essay-link-card\">\n      <strong>The Universal Coherence Scale of Limited Precision</strong>\n      <span class=\"doi\">DOI: 10.5281/zenodo.18714577</span>\n      <a href=\"https://zenodo.org/records/18714577\" target=\"_blank\" rel=\"noopener\">Open record on Zenodo</a>\n      <a href=\"https://doi.org/10.5281/zenodo.18714577\" target=\"_blank\" rel=\"noopener\">Open DOI</a>\n    </article>\n  </div>\n</div>"
+    },
+    "whatSeeing": {
+      "title": "What am I seeing?",
+      "statusTitle": "Current simulation state",
+      "body": "<div class=\"dialog-section\">\n  <p>What you are seeing is an <strong>interactive simulation of 16 groups × 16 functions</strong>. Each column <code>G1…G16</code> represents a group or trajectory; each row <code>S1…S16</code> represents a structural function within that group. The app recalculates the system step by step and shows you two things at once: <strong>numerical values</strong> and <strong>visual form</strong>.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>1. Top number band</h4>\n  <p>The large table at the top is the live state of the system. Each cell shows the current <code>value</code> of a function <code>Sᵢ</code> within a group <code>Gⱼ</code>. If you enable <strong>Show r</strong>, each cell adds below the associated <code>r</code> used internally for that function at that instant.</p>\n  <p>From that same band you can copy the table, download it as CSV, export <code>r</code> snapshots, record history, and export a combined log of values + <code>r</code>.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>2. Control Panel</h4>\n  <p>The floating panel governs the behavior of the simulation. <strong>Start</strong>, <strong>Pause</strong>, <strong>Step</strong>, <strong>Slow down</strong>, and <strong>Reset</strong> control the rhythm. <strong>Level</strong> changes the coupling logic between groups and memories. <strong>Step FPS</strong> sets how many steps per second the app tries to execute. <strong>Decimals</strong> adjusts visible precision.</p>\n  <p>The <strong>Structural pulse</strong> check changes the flow reading: when disabled it keeps the ascending reading <code>S₁ → … → S₁₆</code>; when enabled it uses the pulse described in the essay, starting at <code>S₉</code>, directly triggering <code>S₁</code> and <code>S₁₆</code>, and converging back to the core.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>3. Explanation panel</h4>\n  <p>On the left there is a contextual explanation of the active level. That panel summarizes what kind of memory, coupling, or return the simulation is using in that mode. If you choose <strong>Manual</strong>, the seeds block also opens so you can define the initial values of <code>G1…G16</code> yourself.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>4. Central canvas / viewer</h4>\n  <p>The viewer draws each group as a family of concentric ellipses. In <strong>All (16)</strong> view, each group occupies a cell of the 4×4 grid. In <strong>Group</strong> view, only one is isolated and a side table appears with that group’s exact data.</p>\n  <p>The size of each stroke is calculated from the internal magnitude you have chosen for drawing. If <strong>Draw formula (Sᵢ)</strong> is disabled, the canvas uses the magnitude of <code>r</code>. If it is enabled, it uses the computed formula value for each function. Colors help differentiate levels and groups; geometry helps perceive how layers expand, dampen, or reorganize.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>5. Viewer HUD</h4>\n  <p>In the upper corner of the viewer you see a HUD with quick reading: <strong>STEP</strong>, <strong>SECONDS</strong>, average <code>S1</code>, average <code>S16</code>, number of <strong>RESONANCES</strong>, active flow, last key, and slowdown state. In this implementation, the resonance counter increases when a group simultaneously falls within the internal ranges defined for <code>S16</code> and <code>S1</code>.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>6. Reading tools</h4>\n  <ul>\n    <li><strong>Show r</strong>: shows the <code>r</code> used by each function.</li>\n    <li><strong>Log r</strong>: stores an exportable history.</li>\n    <li><strong>sin → off</strong>: shows a “bare” <code>r</code> instead of passing it through the usual trigonometric output.</li>\n    <li><strong>Draw formula (Sᵢ)</strong>: changes the canvas drawing basis.</li>\n    <li><strong>Manual</strong>: lets you seed each group and then run the logic of the level you choose.</li>\n    <li><strong>Notes</strong>: gives you a local notebook to document observations, hypotheses, or readings.</li>\n  </ul>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>7. How to read the screen without confusing planes</h4>\n  <p>The PWA does not aim to be “the thing” itself, but an <strong>interactive container</strong> for exploring patterns. The numeric layer gives you traceability; the visual layer gives you perception of form; the level changes the interaction logic; and the structural pulse lets you compare <em>how a sequence is lived</em> and <em>how the return to the core functions</em>.</p>\n  <p>In short: at the top you see quantified state, in the center you see dynamic form, on the left you see contextual interpretation, and on the right you keep reading memory. Everything runs locally, step by step, so you can observe the system’s coherence as a process and not only as a final result.</p>\n</div>",
+      "status": {
+        "runState": "State",
+        "step": "Step",
+        "seconds": "Seconds",
+        "level": "Active level",
+        "flow": "Active flow",
+        "view": "Current view",
+        "stepFps": "Step FPS",
+        "decimals": "Decimals",
+        "showR": "Show r",
+        "logR": "Log r",
+        "sinOff": "sin → off",
+        "drawBasis": "Drawing basis",
+        "slow": "Slowdown"
+      },
+      "statusValues": {
+        "running": "Running",
+        "paused": "Paused"
+      },
+      "flags": {
+        "on": "on",
+        "off": "off"
+      },
+      "drawBasisValues": {
+        "formula": "Sᵢ formula",
+        "r": "associated r"
+      },
+      "manualDerivedLevel": "running logic for level {{lvl}}"
+    },
+    "mobileWarning": {
+      "title": "Mobile warning",
+      "body": "<p><strong>OptimeFlow(s) Coherent Dynamics</strong> is designed for <strong>Desktop</strong>. The canvas visualization, the full number band, the floating panel, and fine interaction are not yet adapted for mobile.</p><p>On phone or tablet you can open it and consult content, but to really work with it, compare it, and see it as it was conceived, using a computer is recommended.</p>",
+      "cta": "Understood"
+    }
+  },
+  "toasts": {
+    "langFallback": "Translation not available yet; using Spanish.",
+    "panelHidden": "Control Panel hidden",
+    "panelShown": "Control Panel visible",
+    "flowLinear": "Sequential reading S₁→S₁₆ active",
+    "flowStructural": "Structural pulse S₉→(S₁,S₁₆)→S₉ active",
+    "offlineReady": "PWA ready to use offline.",
+    "pwaInstalled": "PWA installed successfully."
+  },
+  "flow": {
+    "hint": "S₉ triggers S₁ and S₁₆, and the return converges again at S₉.",
+    "modeLinear": "Ascending reading S₁→S₁₆",
+    "modeStructural": "Pulse S₉→(S₁,S₁₆)→S₉",
+    "noteLinear": "<div class=\"flowNote\"><b>Sequential reading active</b><br>The simulation keeps the ascending path S₁ → … → S₁₆ as an experiential and pedagogical reading.</div>",
+    "noteStructural": "<div class=\"flowNote\"><b>Structural pulse active</b><br>The simulation starts at S₉, directly triggers S₁ and S₁₆, and returns to the core through S₂…S₈ and S₁₅…S₁₀.</div>",
+    "patternEntry": "Pulse"
+  }
+}

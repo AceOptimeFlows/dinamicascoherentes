@@ -1,0 +1,270 @@
+{
+  "app": {
+    "title": "OptimeFlow(s) コヒーレント・ダイナミクス",
+    "titlePart1": "コヒーレント",
+    "titlePart2": "ダイナミクス",
+    "description": "OptimeFlow(s) コヒーレント・ダイナミクス · 構造パルス、レベル、エクスポート、オフライン利用を備えた CU 16×16 Sᵢ PWA シミュレーション。"
+  },
+  "common": {
+    "close": "閉じる",
+    "skip": "本文へスキップ"
+  },
+  "menu": {
+    "open": "メニュー",
+    "controlPanel": "コントロールパネル",
+    "language": "言語",
+    "themes": "テーマ",
+    "sixteenSi": "16の S(i)",
+    "whatSeeing": "何を見ているの？"
+  },
+  "panel": {
+    "title": "コントロールパネル",
+    "minimize": "最小化",
+    "expand": "展開",
+    "close": "閉じる"
+  },
+  "languages": {
+    "es": "Español",
+    "en": "English",
+    "ptbr": "Português (BR)",
+    "ca": "Català",
+    "de": "Deutsch"
+  },
+  "buttons": {
+    "start": "開始",
+    "pause": "一時停止",
+    "step": "ステップ",
+    "slow": "スロー (R)",
+    "reset": "リセット (A)",
+    "export": "CSV をエクスポート (E)"
+  },
+  "labels": {
+    "level": "レベル",
+    "stepFps": "Step FPS",
+    "decimals": "小数桁",
+    "drawMode": "描画",
+    "view": "表示",
+    "group": "グループ",
+    "structuralFlow": "構造パルス"
+  },
+  "draw": {
+    "full": "フル",
+    "light": "ライト"
+  },
+  "view": {
+    "all": "すべて (16)",
+    "single": "グループ"
+  },
+  "levels": {
+    "n0": "レベル 0",
+    "n1": "レベル 1",
+    "n2": "レベル 2",
+    "n3": "レベル 3",
+    "n4": "レベル 4",
+    "n5": "レベル 5",
+    "n6": "レベル 6",
+    "n7": "レベル 7",
+    "n8": "レベル 8",
+    "nM": "手動"
+  },
+  "numbers": {
+    "copy": "コピー",
+    "copyTitle": "現在の表をコピー",
+    "downloadCSV": "CSV をダウンロード",
+    "downloadCSVTitle": "現在の表を CSV でダウンロード",
+    "showR": "r を表示 (r_usado/r_si)",
+    "logR": "r を記録",
+    "sinOff": "sin → off（生の r）",
+    "drawFormula": "式を描画 (Sᵢ)",
+    "exportRSnapshot": "r をエクスポート（スナップショット）",
+    "exportRSnapshotTitle": "現在時点の r_usado/r_si をエクスポート",
+    "exportRLog": "r をエクスポート（ログ）",
+    "exportRLogTitle": "「r を記録」が有効な場合、履歴をエクスポート",
+    "exportStateLog": "状態をエクスポート（値+r）",
+    "exportStateLogTitle": "値+r の結合履歴をエクスポート（「r を記録」を使用）"
+  },
+  "explain": {
+    "titlePrefix": "📘 モード説明:",
+    "manualTitle": "\n<b>手動 – 「制御されたシード + レベル {{lvl}}」</b><br>\n• 16 個のシード (G1..G16) を設定します。<br>\n• レベル {{lvl}} のロジックに従って進行します。<br>",
+    "levels": {
+      "0": "<b>レベル 0 – 「最小の単一シード」</b><br>• <code>G1·S1 = 0.000000000000010</code> のみを注入します（レベル 0 選択時に自動再シード）。<br>• 内部メモリ（ローカルな累積和）によりグループ 1 のみが進行します。<br>• 最小励起でのアンカー／振動を観察するのに有効です。<br>",
+      "1": "<b>レベル 1 – 「事前シンクとしての S₁₆」</b><br>• グローバルな <code>suma_s16_anterior</code>（前ステップ）。<br>• <code>r_usado</code> = inv(<code>suma_s16_anterior + acumulado_random_actual + r_iniciales_previos[g]</code>, “sin”).<br>• S₁ = sin(r_usado)（<i>sin→off</i> の場合は r_usado）。S₂..S₁₅: inv(<code>r_usado</code>, 式) → sin(r)。<br>• S₁₆ = 減衰した式（<i>sin→off</i> の場合は r_usado）。<br>",
+      "2": "<b>レベル 2 – 「一様なグローバル和」</b><br>• <code>suma_si_anterior[s]</code> とグローバル和。<br>• S₂..S₁₅: inv(<code>r_usado + suma_total_global</code>, 式)。<br>",
+      "3": "<b>レベル 3 – 「位置ごとの累積和」</b><br>• インデックスごとの <code>suma_si_anterior[s]</code>。<br>• S₂..S₁₅: inv(<code>r_usado + Σ<sub>k≤s</sub> suma_si_anterior[k]</code>, 式)。<br>",
+      "4": "<b>レベル 4 – 「累積和 + 3 周目からのメモリ」</b><br>• レベル 3 と同じだが、3 周目以降は <code>si_valores_previos[g][s]</code> を加える。<br>",
+      "5": "<b>レベル 5 – 「連続フィードバック」</b><br>• s ごとの累積和で、常に <code>si_valores_previos[g][s]</code> を加える。<br>",
+      "6": "<b>レベル 6 – 「ローカルループ S₁₆→S₁」</b><br>• <code>r_usado</code> は同じグループの <code>S₁₆</code>（前ステップ）に依存する。<br>• S₂..S₁₅ はローカルな内部累積和を使う。<br>",
+      "7": "<b>レベル 7 – 「側方結合（リング）」</b><br>• 各グループはインデックスごとに左隣から受け取る。<br>",
+      "8": "<b>レベル 8 – 「内部ミラー（交差）」</b><br>• S₂..S₁₅ は前ステップの対称ペア <code>sym=15−s</code> を使う。<br>"
+    }
+  },
+  "notes": {
+    "title": "📝 ノート",
+    "placeholder": "ここにメモを書いてください...",
+    "save": "保存",
+    "exportTxt": ".txt をエクスポート",
+    "saved": "✔ 保存しました",
+    "saveError": "✖ 保存エラー"
+  },
+  "manual": {
+    "seedsTitle": "シード（手動）: G1…G16",
+    "applySeeds": "シードを適用",
+    "demoG1": "デモ: G1 = 0.000000000000010",
+    "clear": "クリア",
+    "runAtLevel": "このレベルで実行",
+    "hint": "ヒント: 小さい値（例: 0.0001 … 0.01）を使ってください。許容範囲: ±0.99999999999999。",
+    "seedsApplied": "✔ シードを適用しました"
+  },
+  "hud": {
+    "keys": "キー: A=リセット, Space=再生/一時停止, E=エクスポート, R=スロー, S=ステップ",
+    "off": "オフ",
+    "lines": {
+      "step": "STEP: {{step}}",
+      "seconds": "SECONDS: {{seconds}}",
+      "avgS1": "AVG S1: {{value}}",
+      "avgS16": "AVG S16: {{value}}",
+      "resonancias": "共鳴数: {{count}}",
+      "lastKey": "最後のキー: {{key}}",
+      "slow": "スローモード: {{state}}",
+      "flow": "フロー: {{mode}}"
+    }
+  },
+  "viewer": {
+    "singleTitle": "データ · グループ G{{g}}",
+    "table": {
+      "si": "Sᵢ",
+      "value": "値",
+      "r": "r"
+    }
+  },
+  "table": {
+    "corner": "S\\G",
+    "rPrefix": "r=",
+    "cellTitle": "S{{s}}/G{{g}} · 値={{val}}",
+    "cellTitleWithR": "S{{s}}/G{{g}} · 値={{val}} · r={{r}}"
+  },
+  "exports": {
+    "patterns": {
+      "label1": "ラベル1",
+      "label2": "ラベル2",
+      "label3": "ラベル3",
+      "filename": "exported_patterns.csv"
+    },
+    "numbers": {
+      "snapshotCsv": "numbers_snapshot.csv",
+      "snapshotTsv": "numbers_snapshot.tsv"
+    },
+    "notes": {
+      "filename": "cu_notes.txt"
+    },
+    "r": {
+      "snapshot": "r_snapshot.csv",
+      "log": "r_log.csv",
+      "stateLog": "state_val_r_log.csv"
+    },
+    "columns": {
+      "step": "step",
+      "group": "group",
+      "rUsed": "r_used",
+      "value": "value",
+      "r": "r"
+    }
+  },
+  "themes": {
+    "dark": "Dark",
+    "midnight": "Midnight",
+    "violet": "Violet",
+    "emerald": "Emerald",
+    "amber": "Amber",
+    "rose": "Rose",
+    "ocean": "Ocean",
+    "mono": "Mono"
+  },
+  "footer": {
+    "appName": "コヒーレント・ダイナミクス",
+    "author": "Andrés Calvo Espinosa",
+    "privacyBtn": "プライバシー",
+    "mitBtn": "MIT"
+  },
+  "dialogs": {
+    "coherence": {
+      "title": "ユニバーサル・コヒーレンス",
+      "text": "この作品が、感謝とコミットメントの表現となりますように。同じ方向へ、飾り立てずに、考え、感じ、行動し、私たちを結びつけるすべてのものへの倫理と喜びと敬意をもって創造を続けられますように。"
+    },
+    "privacy": {
+      "title": "プライバシー",
+      "body": "<p><strong>OptimeFlow(s) · コヒーレント・ダイナミクス</strong> は 100% ローカル（ブラウザ内）で動作します。入力した値が外部サーバーに送信されることはなく、解析ツールやトラッカーも使用しません。</p><h4>この端末に保存されるデータ</h4><ul><li><strong>設定</strong>: テーマと言語。</li><li><strong>ノート</strong>: 保存を選ぶと <em>localStorage</em> に保存されます。</li><li><strong>手動シード</strong>: 再利用のために <em>localStorage</em> に保存されます。</li><li><strong>オフラインキャッシュ</strong>（PWA としてインストールした場合）: ブラウザがアプリのファイルを保存し、オフラインで開けるようにします。</li></ul><h4>ブラウザ権限</h4><ul><li><strong>クリップボード</strong>: 「コピー」を押したときだけ使われます。</li><li><strong>ストレージ</strong>: 設定、ノート、シードを <em>localStorage</em> に保存するために使われます。</li></ul><h4>データの削除方法</h4><p>ブラウザ設定からサイトデータ（ストレージ/localStorage とキャッシュ）を削除するか、インストールした場合は PWA をアンインストールしてください。</p>"
+    },
+    "mit": {
+      "title": "MIT ライセンス",
+      "text": "MIT License\n\nCopyright (c) 2026 OptimeFlow(s) by Andrés Calvo Espinosa\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."
+    },
+    "language": {
+      "title": "言語",
+      "description": "インターフェースの言語を選択してください。まだ利用できない言語はスペイン語で表示されます。"
+    },
+    "themes": {
+      "title": "テーマ",
+      "description": "表示テーマを選択してください。アプリ全体に適用され、この端末に記憶されます。"
+    },
+    "si16": {
+      "title": "16 の S(i)",
+      "body": "<div class=\"dialog-section\">\n  <p><strong>16 の S(i)</strong> は、Universal Coherence プロジェクトが、<em>現象を切り離された断片へ分解することなく</em>異質な現象を記述しようとする動的モデルです。これらは孤立した「段階」でも閉じた教義でもなく、システムがどのように駆動され、維持され、再編成され、閾値を越え、共鳴に入り、より複雑な統合度へ到達するのかを読むための <strong>最小限の機能文法</strong> として提示されます。</p>\n  <p>この論考は常に二つの補完的な平面を区別します。一つは <strong>機能平面</strong> で、各 S(i) はシステムのダイナミクスの中で普遍的な役割を果たします。もう一つは <strong>表象平面</strong> で、各機能はダイナミクスを可視化・シミュレートするのに役立つ数学的ファミリーとして視覚化できますが、表象そのものを現象と混同することはありません。</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>どのように配列されるか</h4>\n  <p>このモデルはブロックごとに構成されています。<strong>S₁–S₄</strong> は振動的基盤をなします。最小推進、集約、整合性、動的平衡です。<strong>S₅–S₈</strong> は記憶、スケーリング、分散、閾値を導入します。<strong>S₉–S₁₂</strong> は作動核と適応・共鳴領域を集めます。動的蓄積、可塑性、同調、相互接続です。<strong>S₁₃–S₁₆</strong> は複雑な組織化、流れの管理、構造的支持、最大統合投射を表現します。</p>\n  <p>簡単に言えば、16 の S(i) は「きれいなラベルを貼る」ためではなく、ある瞬間にシステムが何をしているのか、そして各層がどう関係しているのかを構造的に読むための枠組みです。</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>構造パルスの鍵</h4>\n  <p>この論考の操作的読解では、<strong>S₉</strong> が中心を占めます。そこは動的蓄積、実効的な履歴、発火の核、再同期の点です。したがって実際のダイナミクスは、単なる <code>S₁ → … → S₁₆</code> の線としては理解できません。本文は二つの補完的な読み方を提案します。</p>\n  <ul>\n    <li><strong>逐次的読解:</strong> モデル全体の展開を説明し、整理し、教育的に記述するのに有用です。</li>\n    <li><strong>構造パルス:</strong> S₉ は S₁ と S₁₆ を直接発火させ、その後システムは二つの同時経路を通って S₉ へ戻ります。<code>S₁ → S₂ → … → S₈ → S₉</code> と <code>S₁₆ → S₁₅ → … → S₁₀ → S₉</code> です。</li>\n  </ul>\n  <p>このように、両端は物語的意味での「始まりと終わり」ではなく、<strong>機能的な極</strong> です。中間の機能は初期発火の経路ではなく、システムが核へ再統合し、再調整し、コヒーレンスを保つためのチャネルです。</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>何を読めるのか</h4>\n  <p>このモデルは、すべてが同じ学問言語を話すことを要求せずに、物理的・生物学的・社会的・認知的・象徴的な現象をマッピングするのに役立ちます。比較されるのは「魔法的な」本質ではなく、<strong>関係のアーキテクチャ</strong> です。下からの支持、上からの調整、再帰性、閾値、共鳴、再分配、再編成能力、そして成果の基準です。</p>\n  <p>その意味で、16 の S(i) は枠組みの操作モジュールとして機能します。構造的直観を、より秩序立ち、可視化でき、比較可能な探究へ移す助けとなります。</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>この PWA との関係</h4>\n  <p>このアプリは、このモデルを <strong>視覚的・計算的コンテナ</strong> として用います。画面上に見えるものは、ふるまいを探り、経路を比較し、ダイナミクスを可視化するためのヒューリスティックな実装です。可視化が論考そのものを尽くすわけではありません。むしろ、シード、レベル、帰還、パルス、共鳴、中間値、読解モードを観察できるインタラクティブな環境へと翻訳しています。</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>枠組みの論考</h4>\n  <div class=\"essay-links\">\n    <article class=\"essay-link-card\">\n      <strong>16 の同時構造機能 (S(i))</strong>\n      <span class=\"doi\">DOI: 10.5281/zenodo.18751249</span>\n      <a href=\"https://zenodo.org/records/18751249\" target=\"_blank\" rel=\"noopener\">Zenodo レコードを開く</a>\n      <a href=\"https://doi.org/10.5281/zenodo.18751249\" target=\"_blank\" rel=\"noopener\">DOI を開く</a>\n    </article>\n    <article class=\"essay-link-card\">\n      <strong>ユニバーサル・コヒーレンス (CU) の存在論的・認識論的基礎</strong>\n      <span class=\"doi\">DOI: 10.5281/zenodo.18702121</span>\n      <a href=\"https://zenodo.org/records/18702121\" target=\"_blank\" rel=\"noopener\">Zenodo レコードを開く</a>\n      <a href=\"https://doi.org/10.5281/zenodo.18702121\" target=\"_blank\" rel=\"noopener\">DOI を開く</a>\n    </article>\n    <article class=\"essay-link-card\">\n      <strong>限定精度によるユニバーサル・コヒーレンス尺度</strong>\n      <span class=\"doi\">DOI: 10.5281/zenodo.18714577</span>\n      <a href=\"https://zenodo.org/records/18714577\" target=\"_blank\" rel=\"noopener\">Zenodo レコードを開く</a>\n      <a href=\"https://doi.org/10.5281/zenodo.18714577\" target=\"_blank\" rel=\"noopener\">DOI を開く</a>\n    </article>\n  </div>\n</div>"
+    },
+    "whatSeeing": {
+      "title": "何を見ているの？",
+      "statusTitle": "シミュレーションの現在状態",
+      "body": "<div class=\"dialog-section\">\n  <p>いま表示されているのは、<strong>16 グループ × 16 関数のインタラクティブ・シミュレーション</strong>です。各列 <code>G1…G16</code> はグループまたは軌跡を、各行 <code>S1…S16</code> はそのグループ内の構造機能を表します。アプリはシステムをステップごとに再計算し、同時に二つのものを見せます。<strong>数値</strong> と <strong>視覚的な形</strong> です。</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>1. 上部の数値バンド</h4>\n  <p>上にある大きな表はシステムの生きた状態です。各セルはグループ <code>Gⱼ</code> 内の関数 <code>Sᵢ</code> の現在の <code>値</code> を示します。<strong>r を表示</strong> を有効にすると、その瞬間その関数に内部的に用いられた対応する <code>r</code> がセルの下に追加表示されます。</p>\n  <p>この領域から表をコピーし、CSV をダウンロードし、<code>r</code> のスナップショットを書き出し、履歴を記録し、値 + <code>r</code> の結合ログを生成できます。</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>2. コントロールパネル</h4>\n  <p>フローティングパネルはシミュレーションのふるまいを制御します。<strong>開始</strong>、<strong>一時停止</strong>、<strong>ステップ</strong>、<strong>スロー</strong>、<strong>リセット</strong> がテンポを制御します。<strong>レベル</strong> はグループ間とメモリ間の結合ロジックを変更します。<strong>Step FPS</strong> はアプリが 1 秒あたり何ステップ実行しようとするかを決めます。<strong>小数桁</strong> は表示精度を調整します。</p>\n  <p><strong>構造パルス</strong> のチェックはフローの読み方を変えます。オフでは <code>S₁ → … → S₁₆</code> の上昇読解を維持し、オンでは論考で記述されたパルスを用います。すなわち <code>S₉</code> から始まり、<code>S₁</code> と <code>S₁₆</code> を直接発火し、核へ収束しながら戻ります。</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>3. 説明パネル</h4>\n  <p>左側には現在のアクティブなレベルに関する文脈説明が表示されます。このパネルは、そのモードでシミュレーションがどのようなメモリ、結合、帰還を使っているかを要約します。<strong>手動</strong> を選ぶと、<code>G1…G16</code> の初期値を自分で固定するためのシードブロックも開きます。</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>4. キャンバス / 中央ビューワ</h4>\n  <p>ビューワは各グループを同心楕円の系列として描きます。<strong>すべて (16)</strong> 表示では、各グループが 4×4 グリッドの 1 セルを占めます。<strong>グループ</strong> 表示では 1 つだけが分離され、そのグループの正確なデータを示すサイドテーブルも表示されます。</p>\n  <p>各線の大きさは、描画のために選んだ内部量にもとづいて計算されます。<strong>式を描画 (Sᵢ)</strong> がオフのとき、キャンバスは <code>r</code> の大きさを使います。オンのときは、各関数について計算された式の値を使います。色はレベルやグループを区別するために使われ、幾何は層がどう拡張し、減衰し、再配置されるかを知覚するために使われます。</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>5. ビューワの HUD</h4>\n  <p>ビューワ右上にはクイックリード用の HUD があり、<strong>STEP</strong>、<strong>SECONDS</strong>、<code>S1</code> の平均、<code>S16</code> の平均、<strong>共鳴</strong> の数、アクティブなフロー、最後に押したキー、スローモードの状態が表示されます。この実装では、あるグループが <code>S16</code> と <code>S1</code> に定義された内部範囲の両方に同時に入ると、共鳴カウンタが増加します。</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>6. 読み取りツール</h4>\n  <ul>\n    <li><strong>r を表示</strong>: 関数ごとに使われた <code>r</code> を表示します。</li>\n    <li><strong>r を記録</strong>: エクスポート可能な履歴を保存します。</li>\n    <li><strong>sin → off</strong>: 通常の三角関数出力へ送らずに、生の <code>r</code> を表示します。</li>\n    <li><strong>式を描画 (Sᵢ)</strong>: キャンバスの描画基準を切り替えます。</li>\n    <li><strong>手動</strong>: 各グループにシードを与え、その後選んだレベルのロジックを実行できます。</li>\n    <li><strong>ノート</strong>: 観察、仮説、読解を記録するローカルノートを提供します。</li>\n  </ul>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>7. 平面を混同せずに画面を読むには</h4>\n  <p>この PWA は「対象そのもの」ではなく、パターンを探索するための <strong>インタラクティブなコンテナ</strong> です。数値は追跡可能性を、視覚は形の知覚を、レベルは相互作用ロジックの変化を与え、構造パルスは上昇シーケンスが <em>どのように経験されるか</em> と、核への帰還が <em>どのように機能するか</em> を比較させます。</p>\n  <p>要するに、上には定量化された状態、中央には動的な形、左には文脈的解釈、右には読解の記憶があります。すべてローカルでステップごとに動作するため、最終結果だけでなく、過程としてのシステムのコヒーレンスを観察できます。</p>\n</div>",
+      "status": {
+        "runState": "状態",
+        "step": "Step",
+        "seconds": "秒",
+        "level": "アクティブレベル",
+        "flow": "アクティブなフロー",
+        "view": "現在の表示",
+        "stepFps": "Step FPS",
+        "decimals": "小数桁",
+        "showR": "r を表示",
+        "logR": "r を記録",
+        "sinOff": "sin → off",
+        "drawBasis": "描画基準",
+        "slow": "スロー"
+      },
+      "statusValues": {
+        "running": "実行中",
+        "paused": "一時停止中"
+      },
+      "flags": {
+        "on": "オン",
+        "off": "オフ"
+      },
+      "drawBasisValues": {
+        "formula": "式 Sᵢ",
+        "r": "対応する r"
+      },
+      "manualDerivedLevel": "レベル {{lvl}} のロジックを実行中"
+    },
+    "mobileWarning": {
+      "title": "モバイル向け注意",
+      "body": "<p><strong>OptimeFlow(s) コヒーレント・ダイナミクス</strong> は <strong>デスクトップ</strong> 向けに設計されています。キャンバス表示、上部の数値バンド全体、フローティングパネル、細かな操作性は、まだモバイル向けに最適化されていません。</p><p>スマートフォンやタブレットでも開いて内容を見ることはできますが、きちんと扱い、比較し、意図された形で体験するにはパソコンの利用をおすすめします。</p>",
+      "cta": "了解"
+    }
+  },
+  "toasts": {
+    "langFallback": "この翻訳はまだ利用できないため、スペイン語を使用します。",
+    "panelHidden": "コントロールパネルを非表示にしました",
+    "panelShown": "コントロールパネルを表示しました",
+    "flowLinear": "逐次読解 S₁→S₁₆ が有効",
+    "flowStructural": "構造パルス S₉→(S₁,S₁₆)→S₉ が有効",
+    "offlineReady": "オフライン利用のための PWA の準備ができました。",
+    "pwaInstalled": "PWA が正常にインストールされました。"
+  },
+  "flow": {
+    "hint": "S₉ が S₁ と S₁₆ を発火させ、帰還は再び S₉ に収束します。",
+    "modeLinear": "上昇読解 S₁→S₁₆",
+    "modeStructural": "パルス S₉→(S₁,S₁₆)→S₉",
+    "noteLinear": "<div class=\"flowNote\"><b>逐次読解が有効</b><br>シミュレーションは、体験的・教育的な読解として S₁ → … → S₁₆ の上昇経路を保ちます。</div>",
+    "noteStructural": "<div class=\"flowNote\"><b>構造パルスが有効</b><br>シミュレーションは S₉ から始まり、S₁ と S₁₆ を直接発火させ、S₂…S₈ と S₁₅…S₁₀ を通って核へ戻ります。</div>",
+    "patternEntry": "パルス"
+  }
+}

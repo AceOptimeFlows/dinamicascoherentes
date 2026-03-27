@@ -1,0 +1,676 @@
+<!doctype html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0f14" />
+  <title>OptimeFlow(s) Dinámicas Coherentes</title>
+  <meta
+    name="description"
+    content="OptimeFlow(s) Dinámicas Coherentes · simulación PWA CU 16×16 Sᵢ con pulso estructural, niveles, exportación y uso offline."
+  />
+  <meta name="application-name" content="OptimeFlow(s) Dinámicas Coherentes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="OptimeFlow(s) Dinámicas Coherentes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/img/dinamicacoherente192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/img/dinamicacoherente512.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/img/dinamicacoherente180.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <a class="skip-link" href="#mainContent" data-i18n="common.skip">Saltar al contenido</a>
+
+  <!-- === HEADER estilo OptimeFlow(s) (igual patrón que Normaliza Coherente) === -->
+  <header class="brand-header app-header" role="banner">
+    <div class="brand">
+      <a
+        class="brand-logo-link"
+        href="https://www.optimeflow.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="OptimeFlow(s)"
+        title="OptimeFlow(s)"
+      >
+        <img
+          id="appLogo"
+          class="brand-logo heat"
+          alt="Logo OptimeFlow(s)"
+          src="assets/img/logo.png"
+        />
+      </a>
+      <span id="brandWord" class="brand-word brand-neon">OptimeFlow(s)</span>
+
+      <!-- Tagline centrado -->
+      <div id="tagline" class="tagline" aria-label="Dinámicas Coherentes">
+        <span class="res" data-i18n="app.titlePart1">Dinámicas</span>
+        <span class="lab" data-i18n="app.titlePart2">Coherentes</span>
+      </div>
+
+      <!-- Engranaje (Idioma/Temas + toggle del Panel) -->
+      <nav class="quick-controls topnav" aria-label="Acciones de la app">
+        <div class="gear-menu-wrapper">
+          <button
+            type="button"
+            class="icon-button"
+            id="gearButton"
+            aria-label="Menú"
+            aria-haspopup="true"
+            aria-expanded="false"
+            aria-controls="gearMenu"
+          >
+            <span class="sr-only" data-i18n="menu.open">Menú</span>
+            <span class="icon-gear" aria-hidden="true"></span>
+          </button>
+
+          <div id="gearMenu" class="gear-menu" role="menu" aria-hidden="true">
+            <button class="gear-item" type="button" id="togglePanelBtn" role="menuitem" data-i18n="menu.controlPanel">
+              Panel de Control
+            </button>
+            <button class="gear-item" type="button" data-open="langDialog" role="menuitem" data-i18n="menu.language">
+              Idioma
+            </button>
+            <button class="gear-item" type="button" data-open="themeDialog" role="menuitem" data-i18n="menu.themes">
+              Temas
+            </button>
+            <button class="gear-item" type="button" data-open="si16Dialog" role="menuitem" data-i18n="menu.sixteenSi">
+              Las 16 S(i)
+            </button>
+            <button class="gear-item" type="button" data-open="whatSeeingDialog" role="menuitem" data-i18n="menu.whatSeeing">
+              ¿Qué estoy viendo?
+            </button>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- === PANEL DE CONTROL flotante (arrastrable) === -->
+  <section id="controlPanel" class="control-panel" aria-label="Panel de Control">
+    <div id="controlPanelHandle" class="control-panel-head" role="button" tabindex="0">
+      <div class="control-panel-title" data-i18n="panel.title">Panel de Control</div>
+      <div class="control-panel-actions">
+        <button
+          id="controlPanelMinBtn"
+          class="panel-action-btn"
+          type="button"
+          data-i18n-title="panel.minimize"
+          aria-label="Minimizar"
+          title="Minimizar"
+        >—</button>
+        <button
+          id="controlPanelCloseBtn"
+          class="panel-action-btn"
+          type="button"
+          data-i18n-title="panel.close"
+          aria-label="Cerrar"
+          title="Cerrar"
+        >✕</button>
+      </div>
+    </div>
+
+    <div id="controlPanelBody" class="control-panel-body">
+      <!-- Botón original oculto (compatibilidad con atajos). NO se elimina -->
+      <button id="btnStartPause" class="hidden" data-i18n="buttons.start">Iniciar</button>
+
+      <!-- Controles que antes estaban en el header -->
+      <div class="controlsGrid">
+        <div class="gridItem">
+          <button id="btnPlay" type="button" data-i18n="buttons.start">Iniciar</button>
+        </div>
+        <div class="gridItem">
+          <button id="btnPause" type="button" data-i18n="buttons.pause">Pausar</button>
+        </div>
+
+        <div class="gridItem">
+          <button id="btnStep" type="button" title="S" data-i18n="buttons.step">Paso</button>
+        </div>
+        <div class="gridItem">
+          <button id="btnRalentizar" type="button" title="R" data-i18n="buttons.slow">Ralentizar (R)</button>
+        </div>
+
+        <div class="gridItem">
+          <button id="btnReset" type="button" title="A" data-i18n="buttons.reset">Reset (A)</button>
+        </div>
+        <div class="gridItem">
+          <label class="inline">
+            <span data-i18n="labels.level">Nivel</span>
+            <select id="nivelSelect">
+              <option value="0" data-i18n="levels.n0">Nivel 0</option>
+              <option value="1" data-i18n="levels.n1" selected>Nivel 1</option>
+              <option value="2" data-i18n="levels.n2">Nivel 2</option>
+              <option value="3" data-i18n="levels.n3">Nivel 3</option>
+              <option value="4" data-i18n="levels.n4">Nivel 4</option>
+              <option value="5" data-i18n="levels.n5">Nivel 5</option>
+              <option value="M" data-i18n="levels.nM">Manual</option>
+              <option value="6" data-i18n="levels.n6">Nivel 6</option>
+              <option value="7" data-i18n="levels.n7">Nivel 7</option>
+              <option value="8" data-i18n="levels.n8">Nivel 8</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="gridItem">
+          <label class="inline" data-i18n-title="flow.hint">
+            <span data-i18n="labels.structuralFlow">Pulso estructural</span>
+            <input id="chkStructuralFlow" type="checkbox" />
+          </label>
+        </div>
+
+        <div class="gridItem">
+          <label class="inline">
+            <span data-i18n="labels.stepFps">Step FPS</span>
+            <input id="stepFps" type="number" min="1" max="60" value="10" />
+          </label>
+        </div>
+
+        <div class="gridItem">
+          <label class="inline">
+            <span data-i18n="labels.decimals">Decimales</span>
+            <input id="decimals" type="number" min="0" max="32" value="16" />
+          </label>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- === CONTENIDO PRINCIPAL === -->
+  <main id="mainContent" class="mainContent" role="main">
+    <!-- BANDA SUPERIOR -->
+    <section id="numbersBar" class="numbersBar">
+      <div class="numbers-head">
+        <div class="numbers-actions">
+          <button
+            id="btnCopyNumbers"
+            type="button"
+            data-i18n="numbers.copy"
+            data-i18n-title="numbers.copyTitle"
+            title="Copiar tabla actual"
+          >Copiar</button>
+
+          <button
+            id="btnDownloadNumbers"
+            type="button"
+            data-i18n="numbers.downloadCSV"
+            data-i18n-title="numbers.downloadCSVTitle"
+            title="Descargar CSV de la tabla actual"
+          >Descargar CSV</button>
+
+          <button
+            id="btnExport"
+            type="button"
+            data-i18n="buttons.export"
+            title="E"
+          >Exportar CSV (E)</button>
+        </div>
+
+        <!-- Herramientas + Dibujar -->
+        <div class="numbers-tools">
+          <label class="inline small">
+            <input id="chkShowR" type="checkbox" />
+            <span data-i18n="numbers.showR">Ver r (r_usado/r_si)</span>
+          </label>
+
+          <label class="inline small">
+            <input id="chkLogR" type="checkbox" />
+            <span data-i18n="numbers.logR">Registrar r</span>
+          </label>
+
+          <label class="inline small">
+            <input id="chkSinOff" type="checkbox" />
+            <span data-i18n="numbers.sinOff">sin → off (r “desnudo”)</span>
+          </label>
+
+          <label class="inline small">
+            <input id="chkDrawFormula" type="checkbox" />
+            <span data-i18n="numbers.drawFormula">Dibujar fórmula (Sᵢ)</span>
+          </label>
+
+          <label class="inline small">
+            <span data-i18n="labels.drawMode">Dibujar</span>:
+            <select id="drawMode">
+              <option value="full" data-i18n="draw.full">Completo</option>
+              <option value="light" data-i18n="draw.light">Ligero</option>
+            </select>
+          </label>
+
+          <button
+            id="btnExportRSnapshot"
+            class="secondary"
+            type="button"
+            data-i18n="numbers.exportRSnapshot"
+            data-i18n-title="numbers.exportRSnapshotTitle"
+            title="Exporta r_usado/r_si del instante"
+          >Exportar r (snapshot)</button>
+
+          <button
+            id="btnExportRLog"
+            class="secondary"
+            type="button"
+            data-i18n="numbers.exportRLog"
+            data-i18n-title="numbers.exportRLogTitle"
+            title="Exporta el histórico si está activo 'Registrar r'"
+          >Exportar r (log)</button>
+
+          <button
+            id="btnExportStateLog"
+            class="secondary"
+            type="button"
+            data-i18n="numbers.exportStateLog"
+            data-i18n-title="numbers.exportStateLogTitle"
+            title="Exporta histórico combinado valor+r (usa 'Registrar r')"
+          >Exportar estado (val+r)</button>
+        </div>
+      </div>
+
+      <div class="tableWrap full">
+        <table id="numbersTable" class="numbers"></table>
+      </div>
+    </section>
+
+    <!-- ZONA DE TRABAJO -->
+    <section class="workspace">
+      <!-- 1) EXPLICACIÓN -->
+      <aside id="explainPanel" class="card">
+        <details open>
+          <summary>
+            <span id="summaryExplainPrefix" data-i18n="explain.titlePrefix">📘 Explicación del modo:</span>
+            <span id="nivelName">Nivel 1</span>
+          </summary>
+          <div id="explainContent" class="explain"></div>
+        </details>
+
+        <!-- UI de Semillas Manuales -->
+        <section id="manualSeedsSection" class="manualSeeds hidden">
+          <h4 data-i18n="manual.seedsTitle">Semillas (Manual): G1…G16</h4>
+
+          <div id="seedGrid" class="seedGrid"></div>
+
+          <div class="seedActions">
+            <button id="btnApplySeeds" type="button" data-i18n="manual.applySeeds">Aplicar semillas</button>
+            <button id="btnDemoG1" type="button" data-i18n="manual.demoG1">Demo: G1 = 0.000000000000010</button>
+            <button id="btnClearSeeds" type="button" data-i18n="manual.clear">Limpiar</button>
+            <span id="seedStatus"></span>
+          </div>
+
+          <!-- Nivel de ejecución para Manual -->
+          <div class="manualRunRow">
+            <label class="inline small">
+              <span data-i18n="manual.runAtLevel">Ejecutar en nivel</span>:
+              <select id="manualRunLevel">
+                <option value="0" data-i18n="levels.n0">Nivel 0</option>
+                <option value="1" data-i18n="levels.n1">Nivel 1</option>
+                <option value="2" data-i18n="levels.n2">Nivel 2</option>
+                <option value="3" data-i18n="levels.n3">Nivel 3</option>
+                <option value="4" data-i18n="levels.n4">Nivel 4</option>
+                <option value="5" data-i18n="levels.n5" selected>Nivel 5</option>
+                <option value="6" data-i18n="levels.n6">Nivel 6</option>
+                <option value="7" data-i18n="levels.n7">Nivel 7</option>
+                <option value="8" data-i18n="levels.n8">Nivel 8</option>
+              </select>
+            </label>
+          </div>
+
+          <small class="muted" data-i18n="manual.hint">
+            Consejo: usa valores pequeños (p. ej., 0.0001 … 0.01). Rango admitido: ±0.99999999999999.
+          </small>
+        </section>
+      </aside>
+
+      <!-- 2) VISUALIZADOR -->
+      <section id="viewer" class="card viewer">
+        <div class="hud">
+          <div class="keys" id="hudKeys" data-i18n="hud.keys">
+            Teclas: A=Reset, Espacio=Play/Pause, E=Export, R=Ralentizar, S=Paso
+          </div>
+          <pre id="info"></pre>
+        </div>
+
+        <!-- Datos del grupo en modo individual -->
+        <div id="singleGroupData" class="singleData hidden"></div>
+        <canvas id="simCanvas"></canvas>
+      </section>
+
+      <!-- 3) NOTAS -->
+      <aside id="notesPanel" class="card">
+        <details open>
+          <summary data-i18n="notes.title">📝 Notas</summary>
+
+          <textarea
+            id="notesText"
+            placeholder="Escribe aquí tus anotaciones..."
+            data-i18n-placeholder="notes.placeholder"
+          ></textarea>
+
+          <div class="notes-actions">
+            <button id="btnSaveNotes" type="button" data-i18n="notes.save">Guardar</button>
+            <button id="btnExportNotes" type="button" data-i18n="notes.exportTxt">Exportar .txt</button>
+            <span id="notesStatus"></span>
+          </div>
+
+          <!-- Controles vista/grupo -->
+          <div id="viewerControls" class="viewerControls">
+            <label class="inline small">
+              <span data-i18n="labels.view">Vista</span>:
+              <select id="viewMode">
+                <option value="all" data-i18n="view.all" selected>Todos (16)</option>
+                <option value="single" data-i18n="view.single">Grupo</option>
+              </select>
+            </label>
+
+            <label class="inline small" id="groupSelectWrap">
+              <span data-i18n="labels.group">Grupo</span>:
+              <select id="groupSelect"></select>
+            </label>
+          </div>
+        </details>
+      </aside>
+    </section>
+  </main>
+
+  <!-- Spacer para reservar el alto del footer fijo -->
+  <div id="footerSpacer" aria-hidden="true"></div>
+
+  <!-- === FOOTER estilo OptimeFlow(s) (igual patrón que Normaliza Coherente) === -->
+  <footer class="brand-footer" id="siteFooter" role="contentinfo">
+    <div class="footer-left">
+      <div class="f-left-row1">
+        <strong>OptimeFlow(s)®</strong>
+        <span class="sep">•</span>
+        <span id="footerAppName" data-i18n="footer.appName">Dinámicas Coherentes</span>
+      </div>
+      <div class="f-left-row2">
+        <span id="f-year">2026</span>
+        <span class="sep">•</span>
+        <a
+          id="footerAuthor"
+          href="https://orcid.org/0009-0005-4079-7418"
+          target="_blank"
+          rel="noopener"
+          data-i18n="footer.author"
+          class="footer-author-link"
+        >Andrés Calvo Espinosa</a>
+      </div>
+    </div>
+
+    <div class="footer-center">
+      <button
+        class="footer-logo-btn"
+        id="footerCoherenceBtn"
+        type="button"
+        data-open="coherenceDialog"
+        aria-label="Coherencia Universal"
+        title="Coherencia Universal"
+      >
+        <img
+          class="tag-logo footer-logo heat"
+          src="assets/img/logo.png"
+          alt="OptimeFlow(s)"
+        >
+      </button>
+    </div>
+
+    <div class="footer-right">
+      <button
+        class="footer-mit-btn"
+        type="button"
+        data-open="privacyDialog"
+        aria-label="Privacidad"
+        title="Privacidad"
+        data-i18n="footer.privacyBtn"
+      >Privacidad</button>
+
+      <button
+        class="footer-mit-btn"
+        type="button"
+        data-open="mitDialog"
+        aria-label="MIT License"
+        title="MIT License"
+        data-i18n="footer.mitBtn"
+      >MIT</button>
+    </div>
+  </footer>
+
+  <!-- === Toast === -->
+  <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true" hidden></div>
+
+  <!-- === Modal Coherencia Universal === -->
+  <dialog id="coherenceDialog" class="modal">
+    <div class="modal-head">
+      <h3 data-i18n="dialogs.coherence.title">Coherencia Universal</h3>
+      <button class="chip ghost" data-close data-i18n-aria-label="common.close" data-i18n-title="common.close" aria-label="">✕</button>
+    </div>
+    <div class="modal-body">
+      <p class="notes" data-i18n="dialogs.coherence.text">
+        Que esta obra sirva como agradecimiento y como compromiso: pensar, sentir y actuar en la misma dirección, sin "adornos"; seguir creando con ética, con alegría y con respeto por todo lo que nos conecta.
+      </p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" data-close data-i18n="common.close">Cerrar</button>
+    </div>
+  </dialog>
+
+  <!-- === Modal Privacidad === -->
+  <dialog id="privacyDialog" class="modal">
+    <div class="modal-head">
+      <h3 data-i18n="dialogs.privacy.title">Privacidad</h3>
+      <button class="chip ghost" data-close data-i18n-aria-label="common.close" data-i18n-title="common.close" aria-label="">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="side-card" data-i18n="dialogs.privacy.body"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" data-close data-i18n="common.close">Cerrar</button>
+    </div>
+  </dialog>
+
+  <!-- === Modal Licencia MIT === -->
+  <dialog id="mitDialog" class="modal">
+    <div class="modal-head">
+      <h3 data-i18n="dialogs.mit.title">Licencia MIT</h3>
+      <button class="chip ghost" data-close aria-label="Cerrar">✕</button>
+    </div>
+    <div class="modal-body">
+      <pre class="license-pre mono" data-i18n="dialogs.mit.text"></pre>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" data-close data-i18n="common.close">Cerrar</button>
+    </div>
+  </dialog>
+
+  <!-- === Modal Idioma === -->
+  <dialog id="langDialog" class="modal">
+    <div class="modal-head">
+      <h3 data-i18n="dialogs.language.title">Idioma</h3>
+      <button class="chip ghost" data-close aria-label="Cerrar">✕</button>
+    </div>
+    <div class="modal-body">
+      <p class="tiny muted" data-i18n="dialogs.language.description">
+        Elige el idioma de la interfaz. Si un idioma no está disponible todavía, se usará Español.
+      </p>
+      <div class="grid3 lang-grid">
+        <button class="btn small" type="button" data-lang="es" data-i18n="languages.es">Español</button>
+        <button class="btn small" type="button" data-lang="en" data-i18n="languages.en">English</button>
+        <button class="btn small" type="button" data-lang="de" data-i18n="languages.de">Deutsch</button>
+        <button class="btn small" type="button" data-lang="it" data-i18n="languages.it">Italiano</button>
+        <button class="btn small" type="button" data-lang="ca" data-i18n="languages.ca">Català</button>
+        <button class="btn small" type="button" data-lang="pt-br" data-i18n="languages.ptbr">Português (BR)</button>
+        <button class="btn small" type="button" data-lang="ko" data-i18n="languages.ko">한국어</button>
+        <button class="btn small" type="button" data-lang="ja" data-i18n="languages.ja">日本語</button>
+        <button class="btn small" type="button" data-lang="zh" data-i18n="languages.zh">中文</button>
+        <button class="btn small" type="button" data-lang="fr" data-i18n="languages.fr">Français</button>
+        <button class="btn small" type="button" data-lang="ru" data-i18n="languages.ru">Русский</button>
+        <button class="btn small" type="button" data-lang="hi" data-i18n="languages.hi">हिन्दी</button>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" data-close data-i18n="common.close">Cerrar</button>
+    </div>
+  </dialog>
+
+  <!-- === Modal Temas === -->
+  <dialog id="themeDialog" class="modal">
+    <div class="modal-head">
+      <h3 data-i18n="dialogs.themes.title">Temas</h3>
+      <button class="chip ghost" data-close aria-label="Cerrar">✕</button>
+    </div>
+    <div class="modal-body">
+      <p class="tiny muted" data-i18n="dialogs.themes.description">
+        Elige un tema visual. Se aplica a toda la app y se recordará en este dispositivo.
+      </p>
+      <div class="themes-grid">
+        <button class="theme-chip" type="button" data-theme="dark" data-i18n="themes.dark">Dark</button>
+        <button class="theme-chip" type="button" data-theme="midnight" data-i18n="themes.midnight">Midnight</button>
+        <button class="theme-chip" type="button" data-theme="violet" data-i18n="themes.violet">Violet</button>
+        <button class="theme-chip" type="button" data-theme="emerald" data-i18n="themes.emerald">Emerald</button>
+        <button class="theme-chip" type="button" data-theme="amber" data-i18n="themes.amber">Amber</button>
+        <button class="theme-chip" type="button" data-theme="rose" data-i18n="themes.rose">Rose</button>
+        <button class="theme-chip" type="button" data-theme="ocean" data-i18n="themes.ocean">Ocean</button>
+        <button class="theme-chip" type="button" data-theme="mono" data-i18n="themes.mono">Mono</button>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" data-close data-i18n="common.close">Cerrar</button>
+    </div>
+  </dialog>
+
+
+  <!-- === Modal Las 16 S(i) === -->
+  <dialog id="si16Dialog" class="modal modal-wide">
+    <div class="modal-head">
+      <h3 data-i18n="dialogs.si16.title">Las 16 S(i)</h3>
+      <button class="chip ghost" data-close aria-label="Cerrar">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="dialog-rich-content" data-i18n="dialogs.si16.body"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" data-close data-i18n="common.close">Cerrar</button>
+    </div>
+  </dialog>
+
+  <!-- === Modal ¿Qué estoy viendo? === -->
+  <dialog id="whatSeeingDialog" class="modal modal-wide">
+    <div class="modal-head">
+      <h3 data-i18n="dialogs.whatSeeing.title">¿Qué estoy viendo?</h3>
+      <button class="chip ghost" data-close aria-label="Cerrar">✕</button>
+    </div>
+    <div class="modal-body">
+      <section class="info-status-card">
+        <h4 data-i18n="dialogs.whatSeeing.statusTitle">Estado actual de la simulación</h4>
+        <div id="whatSeeingStatus" class="dialog-status-grid"></div>
+      </section>
+      <div class="dialog-rich-content" data-i18n="dialogs.whatSeeing.body"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" data-close data-i18n="common.close">Cerrar</button>
+    </div>
+  </dialog>
+
+
+  <!-- === Modal aviso mobile === -->
+  <dialog id="mobileWarningDialog" class="modal">
+    <div class="modal-head">
+      <h3 data-i18n="dialogs.mobileWarning.title">Aviso para mobile</h3>
+      <button class="chip ghost" data-close aria-label="Cerrar">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="warning-card" data-i18n="dialogs.mobileWarning.body"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" data-close data-i18n="dialogs.mobileWarning.cta">Entendido</button>
+    </div>
+  </dialog>
+
+  <!-- Filtro heat‑waves para logos -->
+  <svg aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+    <filter id="heat-waves">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.02" numOctaves="1" seed="3">
+        <animate
+          attributeName="baseFrequency"
+          dur="7.5s"
+          values="0.012 0.02; 0.02 0.04; 0.012 0.02; 0.012 0.02"
+          keyTimes="0;0.3;0.6;1"
+          calcMode="spline"
+          keySplines="0.4 0 0.2 1; 0.4 0 0.2 1; 0 0 1 1"
+          repeatCount="indefinite"
+        />
+      </feTurbulence>
+      <feDisplacementMap in="SourceGraphic" scale="0">
+        <animate
+          attributeName="scale"
+          dur="7.5s"
+          values="0;28;0;0"
+          keyTimes="0;0.3;0.6;1"
+          calcMode="spline"
+          keySplines="0.4 0 0.2 1; 0.4 0 0.2 1; 0 0 1 1"
+          repeatCount="indefinite"
+        />
+      </feDisplacementMap>
+    </filter>
+  </svg>
+
+  <!-- === SW register === -->
+  <script>
+    (() => {
+      if (!('serviceWorker' in navigator)) return;
+
+      let refreshing = false;
+
+      window.addEventListener('load', async () => {
+        try {
+          const reg = await navigator.serviceWorker.register('./sw.js', { scope: './' });
+
+          if (reg.waiting) {
+            reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+          }
+
+          reg.addEventListener('updatefound', () => {
+            const worker = reg.installing;
+            if (!worker) return;
+
+            worker.addEventListener('statechange', () => {
+              if (worker.state === 'installed' && navigator.serviceWorker.controller) {
+                worker.postMessage({ type: 'SKIP_WAITING' });
+              }
+            });
+          });
+
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (refreshing) return;
+            refreshing = true;
+            window.location.reload();
+          });
+
+          if (navigator.onLine) {
+            try { await reg.update(); } catch {}
+          }
+
+          navigator.serviceWorker.ready
+            .then(() => {
+              window.dispatchEvent(new CustomEvent('pwa:offline-ready'));
+            })
+            .catch(() => {});
+        } catch (_) {}
+      });
+
+      window.addEventListener('online', async () => {
+        try {
+          const reg = await navigator.serviceWorker.getRegistration();
+          if (reg) await reg.update();
+        } catch (_) {}
+      });
+
+      window.addEventListener('appinstalled', () => {
+        window.dispatchEvent(new CustomEvent('pwa:installed'));
+      });
+    })();
+  </script>
+
+  <script src="i18n.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

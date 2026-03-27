@@ -1,0 +1,52 @@
+cff-version: "1.2.0"
+message: >-
+  If you use OptimeFlow(s) Dinámicas Coherentes, please cite the software using
+  the metadata from this file.
+title: "OptimeFlow(s) Dinámicas Coherentes"
+type: software
+authors:
+  - family-names: "Calvo Espinosa"
+    given-names: "Andrés"
+    orcid: "https://orcid.org/0009-0005-4079-7418"
+abstract: >-
+  Desktop-first, local-first progressive web app for exploring 16 × 16 S(i)
+  coherent dynamics within the Coherencia Universal framework. The application
+  combines live numerical tables, a canvas-based visualizer, level-based
+  simulation logic, a structural pulse mode, multilingual interface files, and
+  installable offline use as a PWA.
+keywords:
+  - "Coherencia Universal"
+  - "S(i)"
+  - "coherent dynamics"
+  - "interactive simulation"
+  - "progressive web app"
+  - "research software"
+  - "offline-first"
+  - "multilingual"
+license: "MIT"
+url: "https://www.optimeflow.com"
+references:
+  - type: generic
+    authors:
+      - family-names: "Calvo Espinosa"
+        given-names: "Andrés"
+    title: "Las 16 Funciones Estructurales Simultáneas (S(i)): Modelo Dinámico para la Dinámica Estructural Universal en el Proyecto Coherencia Universal"
+    doi: "10.5281/zenodo.18751249"
+    url: "https://doi.org/10.5281/zenodo.18751249"
+    status: preprint
+  - type: generic
+    authors:
+      - family-names: "Calvo Espinosa"
+        given-names: "Andrés"
+    title: "Fundamentos ontológicos y epistemológicos de la Coherencia Universal (CU)"
+    doi: "10.5281/zenodo.18702121"
+    url: "https://doi.org/10.5281/zenodo.18702121"
+    status: preprint
+  - type: generic
+    authors:
+      - family-names: "Calvo Espinosa"
+        given-names: "Andrés"
+    title: "La Escala de Coherencia Universal de Precisión Limitada"
+    doi: "10.5281/zenodo.18714577"
+    url: "https://doi.org/10.5281/zenodo.18714577"
+    status: preprint

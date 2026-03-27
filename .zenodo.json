@@ -1,0 +1,25 @@
+{
+  "title": "OptimeFlow(s) Dinámicas Coherentes",
+  "description": "<p><strong>OptimeFlow(s) Dinámicas Coherentes</strong> is a desktop-first, local-first progressive web app for exploring 16 × 16 S(i) coherent dynamics within the broader Coherencia Universal framework. The interface combines live numerical tables, a canvas-based visualizer, level-based simulation logic, a structural pulse mode, multilingual UI files, export tools, notes, PWA installation, and offline use.</p><p>The software is intended as an exploratory, research-oriented interactive environment rather than as a final or exhaustive formalization. It allows users to compare sequential and structural readings of the model, inspect intermediate values and associated r-values, observe resonant behavior, and work entirely in the browser with no external analytics or backend required for normal use.</p><p>The project is designed primarily for desktop interaction. Core application assets and language files can be cached for offline use through the service worker. Companion essays include <em>Las 16 Funciones Estructurales Simultáneas (S(i))</em> (DOI: 10.5281/zenodo.18751249), <em>Fundamentos ontológicos y epistemológicos de la Coherencia Universal (CU)</em> (DOI: 10.5281/zenodo.18702121), and <em>La Escala de Coherencia Universal de Precisión Limitada</em> (DOI: 10.5281/zenodo.18714577).</p>",
+  "creators": [
+    {
+      "name": "Calvo Espinosa, Andrés",
+      "orcid": "0009-0005-4079-7418"
+    }
+  ],
+  "keywords": [
+    "Coherencia Universal",
+    "S(i)",
+    "coherent dynamics",
+    "structural pulse",
+    "interactive visualization",
+    "progressive web app",
+    "research software",
+    "offline-first",
+    "multilingual"
+  ],
+  "license": "mit",
+  "upload_type": "software",
+  "access_right": "open",
+  "language": "eng"
+}

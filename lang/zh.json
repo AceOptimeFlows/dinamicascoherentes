@@ -1,0 +1,270 @@
+{
+  "app": {
+    "title": "OptimeFlow(s) 连贯动力学",
+    "titlePart1": "连贯",
+    "titlePart2": "动力学",
+    "description": "OptimeFlow(s) 连贯动力学 · 一款 CU 16×16 Sᵢ PWA 模拟器，含结构脉冲、层级、导出与离线使用。"
+  },
+  "common": {
+    "close": "关闭",
+    "skip": "跳到内容"
+  },
+  "menu": {
+    "open": "菜单",
+    "controlPanel": "控制面板",
+    "language": "语言",
+    "themes": "主题",
+    "sixteenSi": "16 个 S(i)",
+    "whatSeeing": "我现在看到的是什么？"
+  },
+  "panel": {
+    "title": "控制面板",
+    "minimize": "最小化",
+    "expand": "展开",
+    "close": "关闭"
+  },
+  "languages": {
+    "es": "Español",
+    "en": "English",
+    "ptbr": "Português (BR)",
+    "ca": "Català",
+    "de": "Deutsch"
+  },
+  "buttons": {
+    "start": "开始",
+    "pause": "暂停",
+    "step": "单步",
+    "slow": "减速 (R)",
+    "reset": "重置 (A)",
+    "export": "导出 CSV (E)"
+  },
+  "labels": {
+    "level": "层级",
+    "stepFps": "Step FPS",
+    "decimals": "小数位",
+    "drawMode": "绘制",
+    "view": "视图",
+    "group": "组",
+    "structuralFlow": "结构脉冲"
+  },
+  "draw": {
+    "full": "完整",
+    "light": "轻量"
+  },
+  "view": {
+    "all": "全部 (16)",
+    "single": "组"
+  },
+  "levels": {
+    "n0": "层级 0",
+    "n1": "层级 1",
+    "n2": "层级 2",
+    "n3": "层级 3",
+    "n4": "层级 4",
+    "n5": "层级 5",
+    "n6": "层级 6",
+    "n7": "层级 7",
+    "n8": "层级 8",
+    "nM": "手动"
+  },
+  "numbers": {
+    "copy": "复制",
+    "copyTitle": "复制当前表格",
+    "downloadCSV": "下载 CSV",
+    "downloadCSVTitle": "下载当前表格的 CSV",
+    "showR": "显示 r (r_usado/r_si)",
+    "logR": "记录 r",
+    "sinOff": "sin → off（原始 r）",
+    "drawFormula": "绘制公式 (Sᵢ)",
+    "exportRSnapshot": "导出 r（快照）",
+    "exportRSnapshotTitle": "导出当前时刻的 r_usado/r_si",
+    "exportRLog": "导出 r（日志）",
+    "exportRLogTitle": "若已启用“记录 r”，则导出历史",
+    "exportStateLog": "导出状态（值+r）",
+    "exportStateLogTitle": "导出值+r的组合历史（使用“记录 r”）"
+  },
+  "explain": {
+    "titlePrefix": "📘 模式说明：",
+    "manualTitle": "\n<b>手动 – “受控播种 + 层级 {{lvl}}”</b><br>\n• 配置 16 个种子（G1..G16）。<br>\n• 按层级 {{lvl}} 的逻辑演化。<br>",
+    "levels": {
+      "0": "<b>层级 0 – “最小单一种子”</b><br>• 仅注入 <code>G1·S1 = 0.000000000000010</code>（选择层级 0 时自动重新播种）。<br>• 只有第 1 组通过内部记忆（本地渐进求和）演化。<br>• 适合观察最小激发下的锚定/振荡。<br>",
+      "1": "<b>层级 1 – “将 S₁₆ 视为前置汇点”</b><br>• 全局 <code>suma_s16_anterior</code>（上一步）。<br>• <code>r_usado</code> = inv(<code>suma_s16_anterior + acumulado_random_actual + r_iniciales_previos[g]</code>, “sin”).<br>• S₁ = sin(r_usado)（若 <i>sin→off</i> 则为 r_usado）。S₂..S₁₅：inv(<code>r_usado</code>, 公式) → sin(r)。<br>• S₁₆ = 衰减后的公式（若 <i>sin→off</i> 则为 r_usado）。<br>",
+      "2": "<b>层级 2 – “统一的全局求和”</b><br>• 使用 <code>suma_si_anterior[s]</code> 与全局总和。<br>• S₂..S₁₅：inv(<code>r_usado + suma_total_global</code>, 公式)。<br>",
+      "3": "<b>层级 3 – “按位置递进求和”</b><br>• 按索引使用 <code>suma_si_anterior[s]</code>。<br>• S₂..S₁₅：inv(<code>r_usado + Σ<sub>k≤s</sub> suma_si_anterior[k]</code>, 公式)。<br>",
+      "4": "<b>层级 4 – “递进 + 从第 3 轮开始记忆”</b><br>• 与层级 3 相同，但从第 3 轮开始加入 <code>si_valores_previos[g][s]</code>。<br>",
+      "5": "<b>层级 5 – “持续反馈”</b><br>• 按 s 递进求和，并始终加入 <code>si_valores_previos[g][s]</code>。<br>",
+      "6": "<b>层级 6 – “本地回路 S₁₆→S₁”</b><br>• <code>r_usado</code> 依赖于本组的 <code>S₁₆</code>（上一步）。<br>• S₂..S₁₅ 使用本地内部递进求和。<br>",
+      "7": "<b>层级 7 – “侧向耦合（环）”</b><br>• 每个组按索引从左侧相邻组接收输入。<br>",
+      "8": "<b>层级 8 – “内部镜像（交叉）”</b><br>• S₂..S₁₅ 使用上一步中的对称配对 <code>sym=15−s</code>。<br>"
+    }
+  },
+  "notes": {
+    "title": "📝 笔记",
+    "placeholder": "在这里写下你的笔记...",
+    "save": "保存",
+    "exportTxt": "导出 .txt",
+    "saved": "✔ 已保存",
+    "saveError": "✖ 保存出错"
+  },
+  "manual": {
+    "seedsTitle": "种子（手动）: G1…G16",
+    "applySeeds": "应用种子",
+    "demoG1": "示例: G1 = 0.000000000000010",
+    "clear": "清空",
+    "runAtLevel": "在该层级运行",
+    "hint": "提示：请使用较小的数值（例如 0.0001 … 0.01）。允许范围：±0.99999999999999。",
+    "seedsApplied": "✔ 已应用种子"
+  },
+  "hud": {
+    "keys": "按键：A=重置, Space=播放/暂停, E=导出, R=减速, S=单步",
+    "off": "关闭",
+    "lines": {
+      "step": "STEP: {{step}}",
+      "seconds": "SECONDS: {{seconds}}",
+      "avgS1": "AVG S1: {{value}}",
+      "avgS16": "AVG S16: {{value}}",
+      "resonancias": "共振数: {{count}}",
+      "lastKey": "最后按键: {{key}}",
+      "slow": "减速器: {{state}}",
+      "flow": "流动: {{mode}}"
+    }
+  },
+  "viewer": {
+    "singleTitle": "数据 · 组 G{{g}}",
+    "table": {
+      "si": "Sᵢ",
+      "value": "值",
+      "r": "r"
+    }
+  },
+  "table": {
+    "corner": "S\\G",
+    "rPrefix": "r=",
+    "cellTitle": "S{{s}}/G{{g}} · 值={{val}}",
+    "cellTitleWithR": "S{{s}}/G{{g}} · 值={{val}} · r={{r}}"
+  },
+  "exports": {
+    "patterns": {
+      "label1": "标签1",
+      "label2": "标签2",
+      "label3": "标签3",
+      "filename": "exported_patterns.csv"
+    },
+    "numbers": {
+      "snapshotCsv": "numbers_snapshot.csv",
+      "snapshotTsv": "numbers_snapshot.tsv"
+    },
+    "notes": {
+      "filename": "cu_notes.txt"
+    },
+    "r": {
+      "snapshot": "r_snapshot.csv",
+      "log": "r_log.csv",
+      "stateLog": "state_val_r_log.csv"
+    },
+    "columns": {
+      "step": "step",
+      "group": "group",
+      "rUsed": "r_used",
+      "value": "value",
+      "r": "r"
+    }
+  },
+  "themes": {
+    "dark": "Dark",
+    "midnight": "Midnight",
+    "violet": "Violet",
+    "emerald": "Emerald",
+    "amber": "Amber",
+    "rose": "Rose",
+    "ocean": "Ocean",
+    "mono": "Mono"
+  },
+  "footer": {
+    "appName": "连贯动力学",
+    "author": "Andrés Calvo Espinosa",
+    "privacyBtn": "隐私",
+    "mitBtn": "MIT"
+  },
+  "dialogs": {
+    "coherence": {
+      "title": "普遍连贯性",
+      "text": "愿这件作品既是一份感谢，也是一种承诺：在同一方向上思考、感受与行动，不加“修饰”；继续以伦理、喜悦以及对一切连接我们的事物的尊重去创造。"
+    },
+    "privacy": {
+      "title": "隐私",
+      "body": "<p><strong>OptimeFlow(s) · 连贯动力学</strong> 完全在本地运行（你的浏览器中）。你输入的数值不会发送到外部服务器，也不会使用分析工具或追踪器。</p><h4>保存在此设备上的数据</h4><ul><li><strong>偏好设置</strong>：视觉主题与语言。</li><li><strong>笔记</strong>：如果你选择保存，将存储在 <em>localStorage</em> 中。</li><li><strong>手动种子</strong>：会保存在 <em>localStorage</em> 中以便重复使用。</li><li><strong>离线缓存</strong>（如果你将其安装为 PWA）：浏览器可能会保存应用文件，以便离线打开。</li></ul><h4>浏览器权限</h4><ul><li><strong>剪贴板</strong>：仅在你点击“复制”时使用。</li><li><strong>存储</strong>：用于在 <em>localStorage</em> 中保存偏好、笔记和种子。</li></ul><h4>如何删除你的数据</h4><p>你可以在浏览器设置中清除网站数据（存储/localStorage 与缓存），或者如果已安装 PWA，也可以直接卸载它。</p>"
+    },
+    "mit": {
+      "title": "MIT 许可",
+      "text": "MIT License\n\nCopyright (c) 2026 OptimeFlow(s) by Andrés Calvo Espinosa\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."
+    },
+    "language": {
+      "title": "语言",
+      "description": "选择界面语言。如果某种语言暂未提供，将使用西班牙语。"
+    },
+    "themes": {
+      "title": "主题",
+      "description": "选择一个视觉主题。它会应用到整个应用，并在此设备上记住。"
+    },
+    "si16": {
+      "title": "16 个 S(i)",
+      "body": "<div class=\"dialog-section\">\n  <p><strong>16 个 S(i)</strong> 是 Universal Coherence 项目试图描述异质现象的一种动态模型，<em>而不把这些现象拆解成彼此无关的碎片</em>。它们不是孤立的“阶段”，也不是封闭的教条，而是一种 <strong>最小功能语法</strong>，用于理解一个系统如何被驱动、如何维持、如何重新组织、如何跨越阈值、如何进入共振，以及如何达到更复杂的整合程度。</p>\n  <p>这篇论述始终区分两个互补的层面。一方面是 <strong>功能层面</strong>：每一个 S(i) 都在系统动力学中承担一个普遍角色。另一方面是 <strong>表征层面</strong>：每个功能都可以通过数学族来可视化，用于帮助模拟并让动力学变得可见，但绝不会把表征本身与现象本身混为一谈。</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>它们如何排列</h4>\n  <p>该模型按区块组织。<strong>S₁–S₄</strong> 构成振动基础：最小驱动、聚合、完整性与动态平衡。<strong>S₅–S₈</strong> 引入记忆、尺度化、分散与阈值。<strong>S₉–S₁₂</strong> 汇集操作核心与适应—共振区域：动态积累、可塑性、调谐与互联。<strong>S₁₃–S₁₆</strong> 表达复杂组织、流动管理、结构支撑以及最大化整合后的投射。</p>\n  <p>简单来说，16 个 S(i) 不是为了“贴上好看的标签”，而是为了提供一种结构性的阅读方式，去理解系统在每个时刻正在做什么，以及它的各个层面如何彼此关联。</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>结构脉冲的关键</h4>\n  <p>在这篇论述的操作性阅读中，<strong>S₉</strong> 占据中心位置：它是动态积累、有效历史、触发核心以及重新同步的节点。因此，真实的动力学并不能只被理解为一条简单的 <code>S₁ → … → S₁₆</code> 直线。文本提出了两种互补的阅读方式：</p>\n  <ul>\n    <li><strong>顺序阅读：</strong>适用于展示、排序以及对模型完整展开的教学性描述。</li>\n    <li><strong>结构脉冲：</strong>S₉ 会直接触发 S₁ 与 S₁₆；随后系统通过两条同时进行的轨迹返回到 S₉：<code>S₁ → S₂ → … → S₈ → S₉</code> 和 <code>S₁₆ → S₁₅ → … → S₁₀ → S₉</code>。</li>\n  </ul>\n  <p>因此，两端并不是叙事意义上的“起点与终点”，而是 <strong>功能性的极点</strong>。中间各功能并不是最初触发的路径，而是系统重新回到核心、重新校准并维持连贯性的再整合通道。</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>它能帮助我们读出什么</h4>\n  <p>该模型可用于映射物理、生物、社会、认知或象征性现象，而不要求它们都使用同一种学科语言。被比较的并不是某种“神秘”的本质，而是 <strong>关系的架构</strong>：自下而上的支撑、自上而下的调节、递归性、阈值、共振、再分配、重组能力，以及结果/成果的判准。</p>\n  <p>从这个意义上说，16 个 S(i) 构成了该框架中的一个操作模块：它帮助人们从结构直觉走向更有序、可视化并且可对照的探索。</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>与这个 PWA 的关系</h4>\n  <p>这个应用把该模型作为一个 <strong>可视化与计算容器</strong>。你在屏幕上看到的是一种启发式实现，用来探索行为、比较路径并让动力学变得可见。可视化并不等于穷尽论文本身；它只是把论文翻译成一个交互环境，让你可以观察种子、层级、回返、脉冲、共振、中间值以及不同的阅读模式。</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>框架相关论文</h4>\n  <div class=\"essay-links\">\n    <article class=\"essay-link-card\">\n      <strong>16 个同时性结构功能 (S(i))</strong>\n      <span class=\"doi\">DOI: 10.5281/zenodo.18751249</span>\n      <a href=\"https://zenodo.org/records/18751249\" target=\"_blank\" rel=\"noopener\">打开 Zenodo 记录</a>\n      <a href=\"https://doi.org/10.5281/zenodo.18751249\" target=\"_blank\" rel=\"noopener\">打开 DOI</a>\n    </article>\n    <article class=\"essay-link-card\">\n      <strong>普遍连贯性（CU）的本体论与认识论基础</strong>\n      <span class=\"doi\">DOI: 10.5281/zenodo.18702121</span>\n      <a href=\"https://zenodo.org/records/18702121\" target=\"_blank\" rel=\"noopener\">打开 Zenodo 记录</a>\n      <a href=\"https://doi.org/10.5281/zenodo.18702121\" target=\"_blank\" rel=\"noopener\">打开 DOI</a>\n    </article>\n    <article class=\"essay-link-card\">\n      <strong>有限精度的普遍连贯性尺度</strong>\n      <span class=\"doi\">DOI: 10.5281/zenodo.18714577</span>\n      <a href=\"https://zenodo.org/records/18714577\" target=\"_blank\" rel=\"noopener\">打开 Zenodo 记录</a>\n      <a href=\"https://doi.org/10.5281/zenodo.18714577\" target=\"_blank\" rel=\"noopener\">打开 DOI</a>\n    </article>\n  </div>\n</div>"
+    },
+    "whatSeeing": {
+      "title": "我现在看到的是什么？",
+      "statusTitle": "模拟的当前状态",
+      "body": "<div class=\"dialog-section\">\n  <p>你现在看到的是一个 <strong>16 个组 × 16 个函数的交互式模拟</strong>。每一列 <code>G1…G16</code> 代表一个组或轨迹；每一行 <code>S1…S16</code> 代表该组中的一个结构功能。应用会一步一步重新计算系统，同时向你展示两样东西：<strong>数值</strong> 和 <strong>可视形态</strong>。</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>1. 顶部数字带</h4>\n  <p>上方的大表格就是系统的实时状态。每个单元格显示组 <code>Gⱼ</code> 中某个函数 <code>Sᵢ</code> 当前的 <code>值</code>。如果启用 <strong>显示 r</strong>，每个单元格下方还会附加显示该时刻内部用于该函数的相关 <code>r</code>。</p>\n  <p>你也可以在这一区域复制表格、下载 CSV、导出 <code>r</code> 快照、记录历史，并导出数值 + <code>r</code> 的组合日志。</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>2. 控制面板</h4>\n  <p>浮动面板控制模拟的运行行为。<strong>开始</strong>、<strong>暂停</strong>、<strong>单步</strong>、<strong>减速</strong> 和 <strong>重置</strong> 控制节奏。<strong>层级</strong> 会改变组与记忆之间的耦合逻辑。<strong>Step FPS</strong> 决定应用每秒尝试执行多少步。<strong>小数位</strong> 用于调整显示精度。</p>\n  <p><strong>结构脉冲</strong> 复选项会改变流动的解读方式：关闭时保持升序阅读 <code>S₁ → … → S₁₆</code>；开启时则采用论文中描述的脉冲方式，从 <code>S₉</code> 起始，直接触发 <code>S₁</code> 与 <code>S₁₆</code>，随后向核心收敛返回。</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>3. 说明面板</h4>\n  <p>左侧会显示当前激活层级的上下文说明。该面板总结此模式下模拟使用的是哪一种记忆、耦合或回返方式。如果你选择 <strong>手动</strong>，还会打开种子区块，让你为 <code>G1…G16</code> 亲自设定初始值。</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>4. 画布 / 中央可视化器</h4>\n  <p>可视化器将每个组绘制为一组同心椭圆。在 <strong>全部 (16)</strong> 视图中，每个组占据 4×4 网格中的一个单元。在 <strong>组</strong> 视图中，只显示单独一个组，并会额外出现一个侧边表格，展示该组的精确数据。</p>\n  <p>每条线的大小是根据你选择用于绘制的内部量来计算的。如果 <strong>绘制公式 (Sᵢ)</strong> 关闭，画布使用的是 <code>r</code> 的幅值；如果开启，则使用每个函数计算出的公式值。颜色用于区分层级与组别；几何结构则帮助感知各层如何扩展、衰减或重新排序。</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>5. 可视化器 HUD</h4>\n  <p>在可视化器右上角，你会看到一个 HUD，用于快速读取：<strong>STEP</strong>、<strong>SECONDS</strong>、<code>S1</code> 平均值、<code>S16</code> 平均值、<strong>共振</strong> 数、当前流动、最后按键以及减速状态。在本实现中，当某个组同时落入为 <code>S16</code> 与 <code>S1</code> 定义的内部区间时，共振计数器就会增加。</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>6. 阅读工具</h4>\n  <ul>\n    <li><strong>显示 r</strong>：显示每个函数所使用的 <code>r</code>。</li>\n    <li><strong>记录 r</strong>：保存可导出的历史。</li>\n    <li><strong>sin → off</strong>：显示“原始” <code>r</code>，而不是将其送入通常的三角输出。</li>\n    <li><strong>绘制公式 (Sᵢ)</strong>：切换画布的绘制依据。</li>\n    <li><strong>手动</strong>：允许你为每个组播种，然后再执行所选层级的逻辑。</li>\n    <li><strong>笔记</strong>：提供一个本地笔记本，用于记录观察、假设或解读。</li>\n  </ul>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>7. 如何在不混淆层面的情况下阅读屏幕</h4>\n  <p>这个 PWA 并不试图成为“对象本身”，而是一个用于探索模式的 <strong>交互式容器</strong>。数值提供可追踪性；视觉提供形态感知；层级会改变交互逻辑；而结构脉冲则让你比较：升序序列是 <em>如何被体验</em> 的，以及回返核心是 <em>如何运作</em> 的。</p>\n  <p>简而言之：上方是量化状态，中间是动态形态，左侧是上下文解释，右侧保留阅读记忆。所有内容都在本地一步一步运行，让你观察系统的连贯性作为一个过程，而不仅仅是最终结果。</p>\n</div>",
+      "status": {
+        "runState": "状态",
+        "step": "Step",
+        "seconds": "秒",
+        "level": "当前层级",
+        "flow": "当前流动",
+        "view": "当前视图",
+        "stepFps": "Step FPS",
+        "decimals": "小数位",
+        "showR": "显示 r",
+        "logR": "记录 r",
+        "sinOff": "sin → off",
+        "drawBasis": "绘制依据",
+        "slow": "减速器"
+      },
+      "statusValues": {
+        "running": "运行中",
+        "paused": "已暂停"
+      },
+      "flags": {
+        "on": "开启",
+        "off": "关闭"
+      },
+      "drawBasisValues": {
+        "formula": "公式 Sᵢ",
+        "r": "对应的 r"
+      },
+      "manualDerivedLevel": "正在执行层级 {{lvl}} 的逻辑"
+    },
+    "mobileWarning": {
+      "title": "移动端提示",
+      "body": "<p><strong>OptimeFlow(s) 连贯动力学</strong> 主要面向 <strong>桌面端</strong> 设计。画布可视化、完整数字带、浮动面板以及精细交互目前尚未针对移动端进行适配。</p><p>在手机或平板上你仍然可以打开它并查看内容，但若想更好地操作、比较，并按原本构想来体验，建议使用电脑。</p>",
+      "cta": "明白了"
+    }
+  },
+  "toasts": {
+    "langFallback": "该翻译尚不可用；将使用西班牙语。",
+    "panelHidden": "控制面板已隐藏",
+    "panelShown": "控制面板可见",
+    "flowLinear": "顺序阅读 S₁→S₁₆ 已启用",
+    "flowStructural": "结构脉冲 S₉→(S₁,S₁₆)→S₉ 已启用",
+    "offlineReady": "PWA 已可离线使用。",
+    "pwaInstalled": "PWA 安装成功。"
+  },
+  "flow": {
+    "hint": "S₉ 触发 S₁ 和 S₁₆，随后回返再次汇聚到 S₉。",
+    "modeLinear": "升序阅读 S₁→S₁₆",
+    "modeStructural": "脉冲 S₉→(S₁,S₁₆)→S₉",
+    "noteLinear": "<div class=\"flowNote\"><b>顺序阅读已启用</b><br>该模拟保留 S₁ → … → S₁₆ 的上升路径，作为一种体验性与教学性的阅读方式。</div>",
+    "noteStructural": "<div class=\"flowNote\"><b>结构脉冲已启用</b><br>该模拟从 S₉ 开始，直接触发 S₁ 与 S₁₆，并经由 S₂…S₈ 与 S₁₅…S₁₀ 返回核心。</div>",
+    "patternEntry": "脉冲"
+  }
+}

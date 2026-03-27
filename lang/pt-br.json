@@ -1,0 +1,277 @@
+{
+  "app": {
+    "title": "OptimeFlow(s) Dinâmicas Coerentes",
+    "titlePart1": "Dinâmicas",
+    "titlePart2": "Coerentes",
+    "description": "OptimeFlow(s) Dinâmicas Coerentes · simulação PWA CU 16×16 Sᵢ com pulso estrutural, níveis, exportação e uso offline."
+  },
+  "common": {
+    "close": "Fechar",
+    "skip": "Pular para o conteúdo"
+  },
+  "menu": {
+    "open": "Menu",
+    "controlPanel": "Painel de Controle",
+    "language": "Idioma",
+    "themes": "Temas",
+    "sixteenSi": "As 16 S(i)",
+    "whatSeeing": "O que estou vendo?"
+  },
+  "panel": {
+    "title": "Painel de Controle",
+    "minimize": "Minimizar",
+    "expand": "Expandir",
+    "close": "Fechar"
+  },
+  "languages": {
+    "es": "Español",
+    "en": "English",
+    "ptbr": "Português (BR)",
+    "ca": "Català",
+    "de": "Deutsch",
+    "it": "Italiano",
+    "ko": "한국어",
+    "ja": "日本語",
+    "zh": "中文",
+    "fr": "Français",
+    "ru": "Русский",
+    "hi": "हिन्दी"
+  },
+  "buttons": {
+    "start": "Iniciar",
+    "pause": "Pausar",
+    "step": "Passo",
+    "slow": "Desacelerar (R)",
+    "reset": "Resetar (A)",
+    "export": "Exportar CSV (E)"
+  },
+  "labels": {
+    "level": "Nível",
+    "stepFps": "Step FPS",
+    "decimals": "Decimais",
+    "drawMode": "Desenhar",
+    "view": "Visualização",
+    "group": "Grupo",
+    "structuralFlow": "Pulso estrutural"
+  },
+  "draw": {
+    "full": "Completo",
+    "light": "Leve"
+  },
+  "view": {
+    "all": "Todos (16)",
+    "single": "Grupo"
+  },
+  "levels": {
+    "n0": "Nível 0",
+    "n1": "Nível 1",
+    "n2": "Nível 2",
+    "n3": "Nível 3",
+    "n4": "Nível 4",
+    "n5": "Nível 5",
+    "n6": "Nível 6",
+    "n7": "Nível 7",
+    "n8": "Nível 8",
+    "nM": "Manual"
+  },
+  "numbers": {
+    "copy": "Copiar",
+    "copyTitle": "Copiar tabela atual",
+    "downloadCSV": "Baixar CSV",
+    "downloadCSVTitle": "Baixar CSV da tabela atual",
+    "showR": "Ver r (r_usado/r_si)",
+    "logR": "Registrar r",
+    "sinOff": "sin → off (r “nu”)",
+    "drawFormula": "Desenhar fórmula (Sᵢ)",
+    "exportRSnapshot": "Exportar r (snapshot)",
+    "exportRSnapshotTitle": "Exporta r_usado/r_si do instante",
+    "exportRLog": "Exportar r (log)",
+    "exportRLogTitle": "Exporta o histórico se \"Registrar r\" estiver ativo",
+    "exportStateLog": "Exportar estado (val+r)",
+    "exportStateLogTitle": "Exporta histórico combinado valor+r (usa \"Registrar r\")"
+  },
+  "explain": {
+    "titlePrefix": "📘 Explicação do modo:",
+    "manualTitle": "\n<b>Manual – “Semeadura controlada + Nível {{lvl}}”</b><br>\n• Configure 16 sementes (G1..G16).<br>\n• Evolução segundo a lógica do Nível {{lvl}}.<br>\n",
+    "levels": {
+      "0": "<b>Nível 0 – “Semente única mínima”</b><br>• Só é injetado <code>G1·S1 = 0.000000000000010</code> (auto‑reseed ao selecionar Nível 0).<br>• Apenas o grupo 1 evolui por memória interna (soma progressiva local).<br>• Útil para observar ancoragens/oscilações com excitação mínima.<br>",
+      "1": "<b>Nível 1 – “S₁₆ como sumidouro prévio”</b><br>• <code>suma_s16_anterior</code> global (passo anterior).<br>• <code>r_usado</code> = inv(<code>suma_s16_anterior + acumulado_random_actual + r_iniciales_previos[g]</code>, “sin”).<br>• S₁ = sin(r_usado) (ou r_usado se <i>sin→off</i>). S₂..S₁₅: inv(<code>r_usado</code>, fórmula) → sin(r).<br>• S₁₆ = fórmula atenuada (ou r_usado se <i>sin→off</i>).<br>",
+      "2": "<b>Nível 2 – “Soma global uniforme”</b><br>• <code>suma_si_anterior[s]</code> e soma global.<br>• S₂..S₁₅: inv(<code>r_usado + suma_total_global</code>, fórmula).<br>",
+      "3": "<b>Nível 3 – “Soma progressiva por posição”</b><br>• <code>suma_si_anterior[s]</code> por índice.<br>• S₂..S₁₅: inv(<code>r_usado + Σ<sub>k≤s</sub> suma_si_anterior[k]</code>, fórmula).<br>",
+      "4": "<b>Nível 4 – “Progressiva + memória a partir da 3ª volta”</b><br>• Como o 3, adicionando <code>si_valores_previos[g][s]</code> a partir da 3ª volta.<br>",
+      "5": "<b>Nível 5 – “Retroalimentação contínua”</b><br>• Progressiva por s e sempre soma <code>si_valores_previos[g][s]</code>.<br>",
+      "6": "<b>Nível 6 – “Loop local S₁₆→S₁”</b><br>• <code>r_usado</code> depende de <code>S₁₆</code> do próprio grupo (passo anterior).<br>• S₂..S₁₅ com soma progressiva interna local.<br>",
+      "7": "<b>Nível 7 – “Acoplamento lateral (anel)”</b><br>• Cada grupo recebe do vizinho à esquerda por índice.<br>",
+      "8": "<b>Nível 8 – “Espelho interno (cruzado)”</b><br>• S₂..S₁₅ usam seu par simétrico <code>sym=15−s</code> do passo anterior.<br>"
+    }
+  },
+  "notes": {
+    "title": "📝 Notas",
+    "placeholder": "Escreva aqui suas anotações...",
+    "save": "Salvar",
+    "exportTxt": "Export .txt",
+    "saved": "✔ Salvo",
+    "saveError": "✖ Erro ao salvar"
+  },
+  "manual": {
+    "seedsTitle": "Sementes (Manual): G1…G16",
+    "applySeeds": "Aplicar sementes",
+    "demoG1": "Demo: G1 = 0.000000000000010",
+    "clear": "Limpar",
+    "runAtLevel": "Executar no nível",
+    "hint": "Dica: use valores pequenos (ex.: 0.0001 … 0.01). Faixa permitida: ±0.99999999999999.",
+    "seedsApplied": "✔ Sementes aplicadas"
+  },
+  "hud": {
+    "keys": "Teclas: A=Reset, Espaço=Play/Pause, E=Exportar, R=Desacelerar, S=Passo",
+    "off": "off",
+    "lines": {
+      "step": "STEP: {{step}}",
+      "seconds": "SECONDS: {{seconds}}",
+      "avgS1": "AVG S1: {{value}}",
+      "avgS16": "AVG S16: {{value}}",
+      "resonancias": "RESSONÂNCIAS: {{count}}",
+      "lastKey": "Última tecla: {{key}}",
+      "slow": "Desacelerador: {{state}}",
+      "flow": "Fluxo: {{mode}}"
+    }
+  },
+  "viewer": {
+    "singleTitle": "Dados · Grupo G{{g}}",
+    "table": {
+      "si": "Sᵢ",
+      "value": "valor",
+      "r": "r"
+    }
+  },
+  "table": {
+    "corner": "S\\G",
+    "rPrefix": "r=",
+    "cellTitle": "S{{s}}/G{{g}} · valor={{val}}",
+    "cellTitleWithR": "S{{s}}/G{{g}} · valor={{val}} · r={{r}}"
+  },
+  "exports": {
+    "patterns": {
+      "label1": "Label1",
+      "label2": "Label2",
+      "label3": "Label3",
+      "filename": "padroes_exportados.csv"
+    },
+    "numbers": {
+      "snapshotCsv": "numbers_snapshot.csv",
+      "snapshotTsv": "numbers_snapshot.tsv"
+    },
+    "notes": {
+      "filename": "notas_cu.txt"
+    },
+    "r": {
+      "snapshot": "r_snapshot.csv",
+      "log": "r_log.csv",
+      "stateLog": "estado_val_r_log.csv"
+    },
+    "columns": {
+      "step": "step",
+      "group": "group",
+      "rUsed": "r_used",
+      "value": "value",
+      "r": "r"
+    }
+  },
+  "themes": {
+    "dark": "Dark",
+    "midnight": "Midnight",
+    "violet": "Violet",
+    "emerald": "Emerald",
+    "amber": "Amber",
+    "rose": "Rose",
+    "ocean": "Ocean",
+    "mono": "Mono"
+  },
+  "footer": {
+    "appName": "Dinâmicas Coerentes",
+    "author": "Andrés Calvo Espinosa",
+    "privacyBtn": "Privacidade",
+    "mitBtn": "MIT"
+  },
+  "dialogs": {
+    "coherence": {
+      "title": "Coerência Universal",
+      "text": "Que esta obra sirva como agradecimento e como compromisso: pensar, sentir e agir na mesma direção, sem \"adornos\"; seguir criando com ética, alegria e respeito por tudo o que nos conecta."
+    },
+    "privacy": {
+      "title": "Privacidade",
+      "body": "<p><strong>OptimeFlow(s) · Dinâmicas Coerentes</strong> funciona 100% localmente (no seu navegador). Não enviamos para servidores externos os valores que você insere, nem usamos analytics ou rastreadores.</p><h4>Dados armazenados neste dispositivo</h4><ul><li><strong>Preferências</strong>: tema visual e idioma.</li><li><strong>Notas</strong>: são salvas em <em>localStorage</em> se você decidir fazer isso.</li><li><strong>Sementes manuais</strong>: são salvas em <em>localStorage</em> para reutilização.</li><li><strong>Cache offline</strong> (se você a instalar como PWA): o navegador pode armazenar arquivos do app para abri-lo sem conexão.</li></ul><h4>Permissões do navegador</h4><ul><li><strong>Área de transferência</strong>: usada apenas quando você clica em “Copiar”.</li><li><strong>Armazenamento</strong>: para salvar preferências, notas e sementes em <em>localStorage</em>.</li></ul><h4>Como apagar seus dados</h4><p>Você pode apagar tudo nas configurações do navegador (dados do site: armazenamento/localStorage e cache) ou desinstalando a PWA, se a tiver instalado.</p>"
+    },
+    "mit": {
+      "title": "MIT License",
+      "text": "MIT License\n\nCopyright (c) 2026 OptimeFlow(s) by Andrés Calvo Espinosa\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."
+    },
+    "language": {
+      "title": "Idioma",
+      "description": "Escolha o idioma da interface. Se um idioma ainda não estiver disponível, será usado o Espanhol."
+    },
+    "themes": {
+      "title": "Temas",
+      "description": "Escolha um tema visual. Ele se aplica a todo o app e será lembrado neste dispositivo."
+    },
+    "si16": {
+      "title": "As 16 S(i)",
+      "body": "<div class=\"dialog-section\">\n  <p><strong>As 16 S(i)</strong> são o modelo dinâmico com o qual o Projeto Coerência Universal busca descrever fenômenos heterogêneos <em>sem fragmentá-los em partes desconectadas</em>. Elas não aparecem como “etapas” isoladas nem como uma doutrina fechada, mas como uma <strong>gramática funcional mínima</strong> para ler como um sistema se impulsiona, se sustenta, se reorganiza, atravessa limiares, entra em ressonância e alcança graus de integração mais complexos.</p>\n  <p>O ensaio distingue sempre dois planos complementares. De um lado, o <strong>plano funcional</strong>: cada S(i) cumpre um papel universal dentro da dinâmica do sistema. De outro, o <strong>plano representacional</strong>: cada função pode ser visualizada por meio de famílias matemáticas que ajudam a simular e tornar visível a dinâmica, sem jamais confundir a representação com o fenômeno em si.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>Como se organizam</h4>\n  <p>O modelo se organiza por blocos. <strong>S₁–S₄</strong> constituem a base vibracional: impulso mínimo, agregação, integridade e equilíbrio dinâmico. <strong>S₅–S₈</strong> introduzem memória, escalonamento, dispersão e limiar. <strong>S₉–S₁₂</strong> reúnem o núcleo operativo e a zona adaptativa-ressonante: acumulação dinâmica, plasticidade, sintonia e interconexão. <strong>S₁₃–S₁₆</strong> expressam organização complexa, gestão de fluxos, suporte estrutural e projeção máxima integrada.</p>\n  <p>Dito de forma simples: as 16 S(i) não procuram “colocar rótulos bonitos”, mas oferecer uma leitura estrutural do que um sistema está fazendo em cada momento e de como suas camadas se relacionam entre si.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>A chave do pulso estrutural</h4>\n  <p>Na leitura operativa do ensaio, <strong>S₉</strong> ocupa o centro: é acumulação dinâmica, história efetiva, núcleo de disparo e ponto de ressincronização. Por isso, a dinâmica real não é compreendida apenas como uma linha <code>S₁ → … → S₁₆</code>. O texto propõe duas leituras complementares:</p>\n  <ul>\n    <li><strong>Leitura sequencial:</strong> útil para exposição, ordenação e descrição pedagógica do desdobramento completo do modelo.</li>\n    <li><strong>Pulso estrutural:</strong> S₉ dispara diretamente S₁ e S₁₆; depois, o sistema retorna a S₉ por duas trajetórias simultâneas: <code>S₁ → S₂ → … → S₈ → S₉</code> e <code>S₁₆ → S₁₅ → … → S₁₀ → S₉</code>.</li>\n  </ul>\n  <p>Assim, os extremos não são “origem e fim” em sentido narrativo, mas <strong>extremos funcionais</strong>. E as funções intermediárias não são o caminho do disparo inicial, mas os canais de reintegração por meio dos quais o sistema volta ao núcleo, se reajusta e sustenta coerência.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>O que permitem ler</h4>\n  <p>O modelo serve para mapear fenômenos físicos, biológicos, sociais, cognitivos ou simbólicos sem exigir que todos falem a mesma linguagem disciplinar. O que se compara não é uma essência “mágica”, mas uma <strong>arquitetura de relações</strong>: suporte vindo de baixo, regulação vinda de cima, recursividade, limiares, ressonâncias, redistribuição, capacidade de reorganização e critério de fruto.</p>\n  <p>Nesse sentido, as 16 S(i) funcionam como um módulo operativo do quadro: ajudam a passar da intuição estrutural para uma exploração mais ordenada, visualizável e contrastável.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>Relação com esta PWA</h4>\n  <p>Este app toma o modelo como <strong>um contêiner visual e computacional</strong>. O que você vê na tela é uma implementação heurística para explorar comportamento, comparar percursos e tornar visível a dinâmica. A visualização não esgota o ensaio: ela o traduz para um ambiente interativo em que você pode observar sementes, níveis, retorno, pulso, ressonâncias, valores intermediários e modos de leitura.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>Ensaios do quadro teórico</h4>\n  <div class=\"essay-links\">\n    <article class=\"essay-link-card\">\n      <strong>As 16 Funções Estruturais Simultâneas (S(i))</strong>\n      <span class=\"doi\">DOI: 10.5281/zenodo.18751249</span>\n      <a href=\"https://zenodo.org/records/18751249\" target=\"_blank\" rel=\"noopener\">Abrir registro no Zenodo</a>\n      <a href=\"https://doi.org/10.5281/zenodo.18751249\" target=\"_blank\" rel=\"noopener\">Abrir DOI</a>\n    </article>\n    <article class=\"essay-link-card\">\n      <strong>Fundamentos ontológicos e epistemológicos da Coerência Universal (CU)</strong>\n      <span class=\"doi\">DOI: 10.5281/zenodo.18702121</span>\n      <a href=\"https://zenodo.org/records/18702121\" target=\"_blank\" rel=\"noopener\">Abrir registro no Zenodo</a>\n      <a href=\"https://doi.org/10.5281/zenodo.18702121\" target=\"_blank\" rel=\"noopener\">Abrir DOI</a>\n    </article>\n    <article class=\"essay-link-card\">\n      <strong>A Escala de Coerência Universal de Precisão Limitada</strong>\n      <span class=\"doi\">DOI: 10.5281/zenodo.18714577</span>\n      <a href=\"https://zenodo.org/records/18714577\" target=\"_blank\" rel=\"noopener\">Abrir registro no Zenodo</a>\n      <a href=\"https://doi.org/10.5281/zenodo.18714577\" target=\"_blank\" rel=\"noopener\">Abrir DOI</a>\n    </article>\n  </div>\n</div>"
+    },
+    "whatSeeing": {
+      "title": "O que estou vendo?",
+      "statusTitle": "Estado atual da simulação",
+      "body": "<div class=\"dialog-section\">\n  <p>O que você está vendo é uma <strong>simulação interativa de 16 grupos × 16 funções</strong>. Cada coluna <code>G1…G16</code> representa um grupo ou trajetória; cada linha <code>S1…S16</code> representa uma função estrutural dentro desse grupo. O app recalcula o sistema passo a passo e mostra duas coisas ao mesmo tempo: <strong>valores numéricos</strong> e <strong>forma visual</strong>.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>1. Faixa superior de números</h4>\n  <p>A grande tabela de cima é o estado vivo do sistema. Cada célula mostra o <code>valor</code> atual de uma função <code>Sᵢ</code> dentro de um grupo <code>Gⱼ</code>. Se você ativar <strong>Ver r</strong>, cada célula acrescenta abaixo o <code>r</code> associado, usado internamente para aquela função naquele instante.</p>\n  <p>Dessa mesma faixa, você pode copiar a tabela, baixá-la em CSV, exportar instantâneos de <code>r</code>, registrar o histórico e gerar um log combinado de valores + <code>r</code>.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>2. Painel de Controle</h4>\n  <p>O painel flutuante governa o comportamento da simulação. <strong>Iniciar</strong>, <strong>Pausar</strong>, <strong>Passo</strong>, <strong>Desacelerar</strong> e <strong>Resetar</strong> controlam o ritmo. <strong>Nível</strong> muda a lógica de acoplamento entre grupos e memórias. <strong>Step FPS</strong> define quantos passos por segundo o app tenta executar. <strong>Decimais</strong> ajusta a precisão visível.</p>\n  <p>A opção <strong>Pulso estrutural</strong> muda a leitura do fluxo: desativada, mantém a leitura ascendente <code>S₁ → … → S₁₆</code>; ativada, usa o pulso descrito no ensaio, com início em <code>S₉</code>, disparo direto de <code>S₁</code> e <code>S₁₆</code>, e retorno convergente ao núcleo.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>3. Painel de explicação</h4>\n  <p>À esquerda aparece uma explicação contextual do nível ativo. Esse painel resume que tipo de memória, acoplamento ou retorno a simulação está usando naquele modo. Se você escolher <strong>Manual</strong>, abre-se também o bloco de sementes para que você mesmo defina os valores iniciais de <code>G1…G16</code>.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>4. Canvas / visualizador central</h4>\n  <p>O visualizador desenha cada grupo como uma família de elipses concêntricas. Na vista <strong>Todos (16)</strong>, cada grupo ocupa uma célula da grade 4×4. Na vista <strong>Grupo</strong>, apenas um é isolado e aparece também uma tabela lateral com os dados exatos desse grupo.</p>\n  <p>O tamanho de cada traço é calculado a partir da magnitude interna que você escolheu para desenhar. Se <strong>Desenhar fórmula (Sᵢ)</strong> estiver desativado, o canvas usa a magnitude de <code>r</code>. Se estiver ativado, usa o valor de fórmula calculado para cada função. As cores ajudam a diferenciar níveis e grupos; a geometria ajuda a perceber como as camadas se expandem, se amortecem ou se reorganizam.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>5. HUD do visualizador</h4>\n  <p>No canto superior do visualizador, você vê um HUD com leitura rápida: <strong>STEP</strong>, <strong>SECONDS</strong>, média de <code>S1</code>, média de <code>S16</code>, número de <strong>RESSONÂNCIAS</strong>, fluxo ativo, última tecla e estado do desacelerador. Nesta implementação, o contador de ressonâncias aumenta quando um grupo cai simultaneamente dentro dos intervalos internos definidos para <code>S16</code> e <code>S1</code>.</p>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>6. Ferramentas de leitura</h4>\n  <ul>\n    <li><strong>Ver r</strong>: mostra o <code>r</code> usado por função.</li>\n    <li><strong>Registrar r</strong>: guarda um histórico exportável.</li>\n    <li><strong>sin → off</strong>: mostra um <code>r</code> “nu” em vez de passá-lo pela saída trigonométrica habitual.</li>\n    <li><strong>Desenhar fórmula (Sᵢ)</strong>: muda a base de desenho do canvas.</li>\n    <li><strong>Manual</strong>: permite semear cada grupo e depois executar a lógica do nível que você selecionar.</li>\n    <li><strong>Notas</strong>: oferece um caderno local para documentar observações, hipóteses ou leituras.</li>\n  </ul>\n</div>\n\n<div class=\"dialog-section\">\n  <h4>7. Como ler a tela sem confundir planos</h4>\n  <p>A PWA não pretende ser “a coisa” em si, mas um <strong>contêiner interativo</strong> para explorar padrões. O plano numérico dá rastreabilidade; o plano visual dá percepção de forma; o nível muda a lógica de interação; e o pulso estrutural permite comparar <em>como se vive</em> uma sequência ascendente e <em>como funciona</em> o retorno ao núcleo.</p>\n  <p>Em resumo: em cima você vê o estado quantificado, no centro vê a forma dinâmica, à esquerda vê a interpretação contextual e à direita conserva a memória de leitura. Tudo roda localmente, passo a passo, para que você possa observar a coerência do sistema como processo, e não apenas como resultado final.</p>\n</div>",
+      "status": {
+        "runState": "Estado",
+        "step": "Passo",
+        "seconds": "Segundos",
+        "level": "Nível ativo",
+        "flow": "Fluxo ativo",
+        "view": "Visualização atual",
+        "stepFps": "Step FPS",
+        "decimals": "Decimais",
+        "showR": "Ver r",
+        "logR": "Registrar r",
+        "sinOff": "sin → off",
+        "drawBasis": "Base de desenho",
+        "slow": "Desacelerador"
+      },
+      "statusValues": {
+        "running": "Em execução",
+        "paused": "Pausada"
+      },
+      "flags": {
+        "on": "ativo",
+        "off": "desativado"
+      },
+      "drawBasisValues": {
+        "formula": "fórmula Sᵢ",
+        "r": "r associado"
+      },
+      "manualDerivedLevel": "executando a lógica do nível {{lvl}}"
+    },
+    "mobileWarning": {
+      "title": "Aviso para mobile",
+      "body": "<p><strong>OptimeFlow(s) Dinâmicas Coerentes</strong> foi pensada para <strong>Desktop</strong>. A visualização do canvas, a faixa completa de números, o painel flutuante e a interação fina ainda não estão adaptados para mobile.</p><p>No telefone ou tablet você pode abri-la e consultar conteúdos, mas para trabalhá-la bem, compará-la e vê-la como foi concebida, o ideal é usar computador.</p>",
+      "cta": "Entendi"
+    }
+  },
+  "toasts": {
+    "langFallback": "Tradução ainda não disponível; usando Espanhol.",
+    "panelHidden": "Painel de Controle oculto",
+    "panelShown": "Painel de Controle visível",
+    "flowLinear": "Leitura sequencial S₁→S₁₆ ativa",
+    "flowStructural": "Pulso estrutural S₉→(S₁,S₁₆)→S₉ ativo",
+    "offlineReady": "PWA pronta para uso offline.",
+    "pwaInstalled": "PWA instalada corretamente."
+  },
+  "flow": {
+    "hint": "S₉ dispara S₁ e S₁₆, e o retorno converge novamente em S₉.",
+    "modeLinear": "Leitura ascendente S₁→S₁₆",
+    "modeStructural": "Pulso S₉→(S₁,S₁₆)→S₉",
+    "noteLinear": "<div class=\"flowNote\"><b>Leitura sequencial ativa</b><br>A simulação mantém o percurso ascendente S₁ → … → S₁₆ como leitura experiencial e pedagógica.</div>",
+    "noteStructural": "<div class=\"flowNote\"><b>Pulso estrutural ativo</b><br>A simulação começa em S₉, dispara diretamente S₁ e S₁₆ e retorna ao núcleo por S₂…S₈ e S₁₅…S₁₀.</div>",
+    "patternEntry": "Pulso"
+  }
+}
