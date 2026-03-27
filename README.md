@@ -243,13 +243,17 @@ This repository includes both:
 - `CITATION.cff` for software citation metadata
 - `.zenodo.json` for Zenodo/GitHub release metadata
 
-The current metadata files intentionally avoid inventing a release DOI or software version. Once you mint the exact release DOI and tag, you may update those fields so the archived record reflects the published version precisely.
+## DOI
+
+    10.5281/zenodo.19262637
+
 
 ## Author
 
 **Andrés Calvo Espinosa**  
 ORCID: https://orcid.org/0009-0005-4079-7418  
 Website: https://www.optimeflow.com
+
 
 ## License
 

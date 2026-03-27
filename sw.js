@@ -1,5 +1,5 @@
 /* OptimeFlow(s) Dinámicas Coherentes – Service Worker offline-first */
-const VERSION = '2.2.0';
+const VERSION = '1.0';
 const CACHE_NAME = `optimeflow-dinamicas-coherentes-${VERSION}`;
 
 const CORE_ASSETS = [
