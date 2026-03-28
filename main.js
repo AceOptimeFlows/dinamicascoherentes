@@ -1042,131 +1042,342 @@
   const FLOW_RETURN_LOWER = [1, 2, 3, 4, 5, 6, 7];
   const FLOW_RETURN_UPPER = [14, 13, 12, 11, 10, 9];
   const S16_FORMULA_ID = '(sin(r) * e^(-r^2)) / (1 + r^2)';
+  const STRUCTURAL_MIN_R = 0.000001;
+  const STRUCTURAL_BASE_R = 0.18;
+  const STRUCTURAL_MAX_R = 1.25;
+  const STRUCTURAL_SAFE_TAN_MAX_R = 1.18;
+  const STRUCTURAL_INPUT_GAIN = 1.85;
+  const STRUCTURAL_PROGRESS_EPS = 0.0005;
+  const STRUCTURAL_STALL_DRIVE = 0.045;
+  const STRUCTURAL_MAX_ABS_VALUE = 8;
 
-  function sFormulaId(index) {
-    switch (index) {
-      case 1:  return 'cos';
-      case 2:  return '1 - sin';
-      case 3:  return 'tan';
-      case 4:  return 'r^2';
-      case 5:  return 'e^r';
-      case 6:  return '1 / (r + 1)';
-      case 7:  return 'ln(r + 1)';
-      case 8:  return 'r^3';
-      case 9:  return 'r';
-      case 10: return 'r * sin';
-      case 11: return 'r * cos';
-      case 12: return 'r^2 * e^(-r)';
-      case 13: return '1 / (r^2 + 1)';
-      case 14: return 'r * ln(r + 1)';
-      default: return '';
+  const FORMULA_SEQUENCE = Object.freeze([
+    'sin',
+    'cos',
+    'tan',
+    'e^r',
+    'sqrt',
+    'ln(r + 1)',
+    '1 / (r + 1)',
+    '1 / (r^2 + 1)',
+    'r^2',
+    'r^3',
+    'r * sin',
+    'r * cos',
+    'r^2 * e^(-r)',
+    'r * ln(r + 1)',
+    '1 - sin',
+    S16_FORMULA_ID
+  ]);
+
+  const FALLBACK_FORMULA_IDS = Object.freeze(FORMULA_SEQUENCE.slice(0, 15));
+
+  function formulaIdForNode(idx) {
+    return FORMULA_SEQUENCE[idx] || 'sin';
+  }
+
+  function maxRForFormula(formulaId) {
+    return formulaId === 'tan' ? STRUCTURAL_SAFE_TAN_MAX_R : STRUCTURAL_MAX_R;
+  }
+
+  function clampRForFormula(formulaId, r) {
+    return clamp(r, STRUCTURAL_MIN_R, maxRForFormula(formulaId));
+  }
+
+  function evaluateFormulaById(formulaId, r) {
+    const safeR = clampRForFormula(formulaId, Math.abs(Number.isFinite(r) ? r : STRUCTURAL_BASE_R));
+    switch (formulaId) {
+      case 'sin': return Math.sin(safeR);
+      case 'cos': return Math.cos(safeR);
+      case 'tan': return Math.tan(safeR);
+      case 'e^r': return Math.exp(safeR);
+      case 'sqrt': return Math.sqrt(safeR);
+      case 'ln(r + 1)': return Math.log(safeR + 1);
+      case '1 / (r + 1)': return 1 / (safeR + 1);
+      case '1 / (r^2 + 1)': return 1 / ((safeR ** 2) + 1);
+      case 'r^2': return safeR ** 2;
+      case 'r^3': return safeR ** 3;
+      case 'r * sin': return safeR * Math.sin(safeR);
+      case 'r * cos': return safeR * Math.cos(safeR);
+      case 'r^2 * e^(-r)': return (safeR ** 2) * Math.exp(-safeR);
+      case 'r * ln(r + 1)': return safeR * Math.log(safeR + 1);
+      case '1 - sin': return 1 - Math.sin(safeR);
+      case S16_FORMULA_ID: return (Math.sin(safeR) * Math.exp(-(safeR ** 2))) / (1 + (safeR ** 2));
+      default: return Math.sin(safeR);
     }
   }
-  const s16Value = (r) => (Math.sin(r) * Math.exp(-(r**2))) / (1 + r**2);
 
-  function setR(g, s, rvalue) { state.r_si[g][s] = rvalue; }
-
-  function logRLine(step, g) {
-    const rowR = [step, g+1, state.r_usados[g], ...state.r_si[g]].map(v =>
-      (typeof v === 'number' ? fmt(v) : v)
-    ).join(',');
-    state.r_log.push(rowR);
-
-    const vals = state.groups[g].map(s => fmt(s.total_value));
-    const rs = state.r_si[g].map(r => fmt(r));
-    const rowState = [fmt(step), fmt(g+1), fmt(state.r_usados[g])];
-    for (let i = 0; i < SI; i++) { rowState.push(vals[i], rs[i]); }
-    state.state_log.push(rowState.join(','));
+  function structuralSignalSign(...signals) {
+    for (const signal of signals) {
+      if (Number.isFinite(signal) && Math.abs(signal) > 1e-12) return Math.sign(signal);
+    }
+    return 1;
   }
 
-  function setNodeValueFromR(g, idx, rvalue) {
+  function normaliseMagnitudeToR(value, gain = STRUCTURAL_INPUT_GAIN) {
+    const magnitude = Math.abs(Number.isFinite(value) ? value : 0);
+    return STRUCTURAL_MAX_R * Math.tanh(magnitude * gain);
+  }
+
+  function buildBaseSignedR(g, input, fallbackSignal = 0) {
+    const prevSignedR = Number.isFinite(state.r_usados[g]) ? state.r_usados[g] : 0;
+    const sign = structuralSignalSign(input, fallbackSignal, prevSignedR, state.r_iniciales_previos[g], state.r_iniciales[g]);
+    const norm = normaliseMagnitudeToR(input);
+    const prevMagnitude = Math.abs(prevSignedR) > 0 ? Math.abs(prevSignedR) : STRUCTURAL_BASE_R;
+    const phase = 0.06 * Math.abs(Math.sin(((g + 1) * 0.711) + ((state.stepCounter + 1) * 0.173)));
+    const unsignedR = clamp((prevMagnitude * 0.36) + (norm * 0.52) + phase + 0.08, STRUCTURAL_MIN_R, STRUCTURAL_MAX_R);
+    return sign * unsignedR;
+  }
+
+  function buildCandidateSignedR(g, idx, formulaId, drive, baseSignedR, phaseOffset = 0) {
+    const prevSignedR = Number.isFinite(state.r_si[g][idx]) ? state.r_si[g][idx] : 0;
+    const prevMagnitude = Math.abs(prevSignedR) > 0 ? Math.abs(prevSignedR) : STRUCTURAL_BASE_R;
+    const baseMagnitude = Math.abs(Number.isFinite(baseSignedR) ? baseSignedR : 0);
+    const driveMagnitude = normaliseMagnitudeToR(drive, STRUCTURAL_INPUT_GAIN + (idx * 0.015));
+    const phase = 0.05 * Math.abs(Math.sin(((g + 1) * 0.618) + ((idx + 1) * 0.382) + ((state.stepCounter + 1) * 0.191) + phaseOffset));
+    const unsignedR = clampRForFormula(
+      formulaId,
+      (prevMagnitude * 0.32) + (baseMagnitude * 0.20) + (driveMagnitude * 0.48) + phase + 0.03
+    );
+    const sign = structuralSignalSign(drive, baseSignedR, state.si_valores_previos[g][idx], prevSignedR);
+    return sign * unsignedR;
+  }
+
+  function evaluateCandidateNode(g, idx, formulaId, drive, baseSignedR, phaseOffset = 0) {
+    const signedR = buildCandidateSignedR(g, idx, formulaId, drive, baseSignedR, phaseOffset);
+    const unsignedR = Math.abs(signedR);
+    const value = state.sinOff
+      ? signedR
+      : evaluateFormulaById(formulaId, unsignedR) * structuralSignalSign(signedR, drive, baseSignedR);
+
+    return {
+      formulaId,
+      signedR,
+      unsignedR,
+      value
+    };
+  }
+
+  function isCollapsedCandidate(candidate, ctx) {
+    if (!Number.isFinite(candidate.value) || !Number.isFinite(candidate.signedR)) return true;
+    if (Math.abs(candidate.value) > STRUCTURAL_MAX_ABS_VALUE) return true;
+    if (candidate.formulaId === 'tan' && candidate.unsignedR >= (STRUCTURAL_SAFE_TAN_MAX_R - 0.01)) return true;
+
+    const significantDrive = Math.abs(ctx.drive) > STRUCTURAL_STALL_DRIVE || Math.abs(ctx.anchorSignal || 0) > STRUCTURAL_STALL_DRIVE;
+    if (!significantDrive) return false;
+
+    const deltaOwn = Math.abs(candidate.value - ctx.ownPrevValue);
+    const deltaNode = Math.abs(candidate.value - ctx.prevNodeValue);
+    return deltaOwn < STRUCTURAL_PROGRESS_EPS && deltaNode < STRUCTURAL_PROGRESS_EPS;
+  }
+
+  function candidateScore(candidate, ctx) {
+    const targetSignal = Math.tanh(Number.isFinite(ctx.drive) ? ctx.drive : 0);
+    const candidateSignal = Math.tanh(candidate.value);
+    const closeness = 1 / (1 + Math.abs(candidateSignal - targetSignal));
+    const advance = Math.abs(candidate.value - ctx.ownPrevValue) + (0.6 * Math.abs(candidate.value - ctx.prevNodeValue));
+    const continuity = 1 / (1 + Math.abs(Math.abs(candidate.signedR) - Math.abs(ctx.baseSignedR || STRUCTURAL_BASE_R)));
+    const anchorMatch = Math.abs(ctx.anchorSignal || 0) > 1e-9
+      ? 1 / (1 + Math.abs(candidateSignal - Math.tanh(ctx.anchorSignal)))
+      : 0.5;
+
+    return (closeness * 1.1) + (advance * 0.35) + (continuity * 0.15) + (anchorMatch * 0.20);
+  }
+
+  function setResolvedNode(g, idx, candidate) {
     const G = state.groups[g];
-    const safeR = Number.isFinite(rvalue) ? rvalue : 0;
-    setR(g, idx, safeR);
-
-    const value = (idx === IDX_S16)
-      ? (state.sinOff ? safeR : s16Value(safeR))
-      : (state.sinOff ? safeR : Math.sin(safeR));
-
-    G[idx].formula_value = value;
-    G[idx].total_value = value;
-    return { r: safeR, value };
+    state.r_si[g][idx] = candidate.signedR;
+    G[idx].formula_value = candidate.value;
+    G[idx].total_value = candidate.value;
+    G[idx].formula_id = candidate.formulaId;
+    return { r: candidate.signedR, value: candidate.value, formulaId: candidate.formulaId };
   }
 
-  function resolveNodeR(idx, target, fallbackR) {
-    if (!Number.isFinite(target)) return fallbackR;
+  function resolveDynamicNode(g, idx, drive, baseSignedR, context = {}) {
+    const ctx = {
+      drive: Number.isFinite(drive) ? drive : 0,
+      ownPrevValue: Number.isFinite(state.si_valores_previos[g][idx]) ? state.si_valores_previos[g][idx] : 0,
+      prevNodeValue: Number.isFinite(context.prevNodeValue) ? context.prevNodeValue : 0,
+      anchorSignal: Number.isFinite(context.anchorSignal) ? context.anchorSignal : 0,
+      baseSignedR: Number.isFinite(baseSignedR) ? baseSignedR : 0
+    };
 
-    if (idx === IDX_S1) {
-      const inv = calcular_inversion_CU(target, 'sin');
-      return inv ? inv.r : fallbackR;
+    const primaryFormulaId = formulaIdForNode(idx);
+    const primaryCandidate = evaluateCandidateNode(
+      g,
+      idx,
+      primaryFormulaId,
+      ctx.drive + (ctx.anchorSignal * 0.22),
+      ctx.baseSignedR,
+      0
+    );
+
+    if (idx === IDX_S16 || !isCollapsedCandidate(primaryCandidate, ctx)) {
+      return setResolvedNode(g, idx, primaryCandidate);
     }
 
-    if (idx === IDX_S16) {
-      const inv = calcular_inversion_CU(target, S16_FORMULA_ID);
-      return inv ? inv.r : fallbackR;
+    let bestCandidate = primaryCandidate;
+    let bestScore = -Infinity;
+
+    for (let i = 0; i < FALLBACK_FORMULA_IDS.length; i++) {
+      const fallbackFormulaId = FALLBACK_FORMULA_IDS[i];
+      if (fallbackFormulaId === primaryFormulaId) continue;
+
+      const candidate = evaluateCandidateNode(
+        g,
+        idx,
+        fallbackFormulaId,
+        ctx.drive + (ctx.anchorSignal * 0.28),
+        ctx.baseSignedR,
+        (i + 1) * 0.17
+      );
+
+      if (isCollapsedCandidate(candidate, ctx)) continue;
+      const score = candidateScore(candidate, ctx);
+      if (score > bestScore) {
+        bestScore = score;
+        bestCandidate = candidate;
+      }
     }
 
-    const formula = sFormulaId(idx);
-    if (!formula) return fallbackR;
-
-    const inv = calcular_inversion_CU(target, formula);
-    return inv ? inv.r : fallbackR;
+    return setResolvedNode(g, idx, bestCandidate);
   }
 
-  function setNodeFromTarget(g, idx, target, fallbackR) {
-    const r = resolveNodeR(idx, target, fallbackR);
-    return setNodeValueFromR(g, idx, r);
+  function poleCouplingSignal(baseValue, maxValue, nucleusMemory = 0) {
+    const bridge = 0.55 * (baseValue + maxValue);
+    const product = baseValue * maxValue;
+    const fusion = Math.abs(product) > 1e-12 ? Math.sign(product) * Math.sqrt(Math.abs(product)) : 0;
+    return (bridge * 0.35) + (fusion * 0.65) + (nucleusMemory * 0.25);
   }
 
-  function applyLinearFlow(g, rUsado, getTargetForIdx) {
-    state.r_usados[g] = rUsado;
-    setNodeValueFromR(g, IDX_S1, rUsado);
-
-    for (let idx = 1; idx < IDX_S16; idx++) {
-      setNodeFromTarget(g, idx, getTargetForIdx(idx), rUsado);
+  function integrateForS16(g, directPoleValue, baseSignedR) {
+    let weighted = 0;
+    let weightSum = 0;
+    for (let i = 0; i < IDX_S16; i++) {
+      const weight = 1 + (i * 0.05);
+      weighted += state.groups[g][i].total_value * weight;
+      weightSum += weight;
     }
-
-    setNodeValueFromR(g, IDX_S16, rUsado);
+    const aggregated = weightSum > 0 ? (weighted / weightSum) : 0;
+    const priorS16 = state.si_valores_previos[g][IDX_S16];
+    return aggregated + (directPoleValue * 0.60) + (priorS16 * 0.30) + ((Number.isFinite(baseSignedR) ? baseSignedR : 0) * 0.20);
   }
 
-  function applyStructuralFlow(g, rUsado, getTargetForIdx) {
-    state.r_usados[g] = rUsado;
+  function resolvePolePair(g, baseSignedR, getTargetForIdx) {
+    const prevS1 = state.si_valores_previos[g][IDX_S1];
+    const prevS16 = state.si_valores_previos[g][IDX_S16];
 
-    const nucleusSeedTarget = getTargetForIdx(IDX_S9);
-    const nucleusSeed = setNodeFromTarget(g, IDX_S9, nucleusSeedTarget, rUsado);
-
-    const lowerSeed = setNodeFromTarget(
+    let s1 = resolveDynamicNode(
       g,
       IDX_S1,
-      getTargetForIdx(IDX_S1) + nucleusSeed.value,
-      nucleusSeed.r || rUsado
+      getTargetForIdx(IDX_S1) + (prevS16 * 0.55) + (prevS1 * 0.20),
+      baseSignedR,
+      { prevNodeValue: prevS1, anchorSignal: prevS16 }
     );
 
-    const upperSeed = setNodeFromTarget(
+    let s16 = resolveDynamicNode(
       g,
       IDX_S16,
-      getTargetForIdx(IDX_S16) + nucleusSeed.value,
-      nucleusSeed.r || rUsado
+      getTargetForIdx(IDX_S16) + (s1.value * 0.65) + (prevS16 * 0.20),
+      baseSignedR,
+      { prevNodeValue: prevS16, anchorSignal: s1.value }
     );
 
-    let lowerCarry = lowerSeed.value;
+    s1 = resolveDynamicNode(
+      g,
+      IDX_S1,
+      getTargetForIdx(IDX_S1) + (s16.value * 0.45) + (prevS1 * 0.15),
+      baseSignedR,
+      { prevNodeValue: prevS1, anchorSignal: s16.value }
+    );
+
+    s16 = resolveDynamicNode(
+      g,
+      IDX_S16,
+      getTargetForIdx(IDX_S16) + (s1.value * 0.55) + (prevS16 * 0.15),
+      baseSignedR,
+      { prevNodeValue: prevS16, anchorSignal: s1.value }
+    );
+
+    return { s1, s16 };
+  }
+
+  function applyLinearFlow(g, baseSignedR, getTargetForIdx) {
+    state.r_usados[g] = baseSignedR;
+
+    const prevS16 = state.si_valores_previos[g][IDX_S16];
+    const s1 = resolveDynamicNode(
+      g,
+      IDX_S1,
+      getTargetForIdx(IDX_S1) + (prevS16 * 0.50),
+      baseSignedR,
+      { prevNodeValue: state.si_valores_previos[g][IDX_S1], anchorSignal: prevS16 }
+    );
+
+    let carry = s1.value;
+    for (let idx = 1; idx < IDX_S16; idx++) {
+      let drive = getTargetForIdx(idx) + (carry * 0.42);
+      if (idx === IDX_S9) {
+        drive += poleCouplingSignal(s1.value, prevS16, state.si_valores_previos[g][IDX_S9]);
+      }
+      const node = resolveDynamicNode(g, idx, drive, baseSignedR, { prevNodeValue: carry, anchorSignal: s1.value });
+      carry = node.value;
+    }
+
+    resolveDynamicNode(
+      g,
+      IDX_S16,
+      integrateForS16(g, s1.value, baseSignedR),
+      baseSignedR,
+      { prevNodeValue: carry, anchorSignal: s1.value }
+    );
+  }
+
+  function applyStructuralFlow(g, baseSignedR, getTargetForIdx) {
+    state.r_usados[g] = baseSignedR;
+
+    const { s1, s16 } = resolvePolePair(g, baseSignedR, getTargetForIdx);
+    const emergentSeed = poleCouplingSignal(s1.value, s16.value, state.si_valores_previos[g][IDX_S9]);
+
+    let lowerCarry = s1.value;
     for (const idx of FLOW_RETURN_LOWER) {
-      const node = setNodeFromTarget(g, idx, getTargetForIdx(idx) + lowerCarry, rUsado);
+      const node = resolveDynamicNode(
+        g,
+        idx,
+        getTargetForIdx(idx) + (lowerCarry * 0.58) + (emergentSeed * 0.12),
+        baseSignedR,
+        { prevNodeValue: lowerCarry, anchorSignal: emergentSeed }
+      );
       lowerCarry = node.value;
     }
 
-    let upperCarry = upperSeed.value;
+    let upperCarry = s16.value;
     for (const idx of FLOW_RETURN_UPPER) {
-      const node = setNodeFromTarget(g, idx, getTargetForIdx(idx) + upperCarry, rUsado);
+      const node = resolveDynamicNode(
+        g,
+        idx,
+        getTargetForIdx(idx) + (upperCarry * 0.58) + (emergentSeed * 0.12),
+        baseSignedR,
+        { prevNodeValue: upperCarry, anchorSignal: emergentSeed }
+      );
       upperCarry = node.value;
     }
 
-    setNodeFromTarget(g, IDX_S9, nucleusSeedTarget + lowerCarry + upperCarry, nucleusSeed.r || rUsado);
+    resolveDynamicNode(
+      g,
+      IDX_S9,
+      getTargetForIdx(IDX_S9) + emergentSeed + (lowerCarry * 0.65) + (upperCarry * 0.65) + (state.si_valores_previos[g][IDX_S9] * 0.25),
+      baseSignedR,
+      {
+        prevNodeValue: state.si_valores_previos[g][IDX_S9],
+        anchorSignal: poleCouplingSignal(lowerCarry, upperCarry, emergentSeed)
+      }
+    );
   }
 
-  function applyGroupFlow(g, rUsado, getTargetForIdx) {
-    if (state.structuralFlow) applyStructuralFlow(g, rUsado, getTargetForIdx);
-    else applyLinearFlow(g, rUsado, getTargetForIdx);
+  function applyGroupFlow(g, baseSignedR, getTargetForIdx) {
+    if (state.structuralFlow) applyStructuralFlow(g, baseSignedR, getTargetForIdx);
+    else applyLinearFlow(g, baseSignedR, getTargetForIdx);
   }
 
   function syncPrevForGroup(g) {
@@ -1200,18 +1411,17 @@
     const prev = state.si_valores_previos.map(row => row.slice());
     const g = 0;
 
-    const r_seed = state.r_iniciales[g];
-    const inv = calcular_inversion_CU(r_seed, 'sin');
-    const r_usado = inv ? inv.r : r_seed;
+    const inputSeed = state.r_iniciales[g] + (prev[g][IDX_S9] * 0.35) + (prev[g][IDX_S16] * 0.15);
+    const baseSignedR = buildBaseSignedR(g, inputSeed, state.r_iniciales[g]);
 
     const getTargetForIdx = (idx) => {
-      if (idx === IDX_S1 || idx === IDX_S16) return r_usado;
+      if (idx === IDX_S1 || idx === IDX_S16) return baseSignedR;
       let suma_interna_prev = 0.0;
       for (let k = 0; k <= idx; k++) suma_interna_prev += prev[g][k];
-      return r_usado + suma_interna_prev;
+      return baseSignedR + suma_interna_prev;
     };
 
-    applyGroupFlow(g, r_usado, getTargetForIdx);
+    applyGroupFlow(g, baseSignedR, getTargetForIdx);
     syncPrevForGroup(g);
     state.r_iniciales_previos = state.r_iniciales.slice();
     if (state.logR) logRLine(state.stepCounter + 1, g);
@@ -1227,11 +1437,14 @@
       acumulado_random_actual += r_random_actual;
 
       const valor_entrada = suma_s16_anterior + acumulado_random_actual + state.r_iniciales_previos[g];
-      const inv = calcular_inversion_CU(valor_entrada, 'sin');
-      const r_usado = inv ? inv.r : r_random_actual;
+      const baseSignedR = buildBaseSignedR(g, valor_entrada, r_random_actual);
 
-      const getTargetForIdx = (idx) => (idx === IDX_S1 || idx === IDX_S16) ? r_usado : r_usado;
-      applyGroupFlow(g, r_usado, getTargetForIdx);
+      const getTargetForIdx = (idx) => {
+        if (idx === IDX_S1 || idx === IDX_S16) return baseSignedR;
+        return baseSignedR + (suma_s16_anterior * 0.15);
+      };
+
+      applyGroupFlow(g, baseSignedR, getTargetForIdx);
       finalizeGroupStep(g, true);
     }
     state.r_iniciales_previos = state.r_iniciales.slice();
@@ -1247,11 +1460,14 @@
       const r_random_actual = state.r_iniciales[g];
       acumulado_random_actual += r_random_actual;
 
-      const inv = calcular_inversion_CU(acumulado_random_actual + state.r_iniciales_previos[g], 'sin');
-      const r_usado = inv ? inv.r : r_random_actual;
+      const baseSignedR = buildBaseSignedR(g, acumulado_random_actual + state.r_iniciales_previos[g] + suma_total, r_random_actual);
 
-      const getTargetForIdx = (idx) => (idx === IDX_S1 || idx === IDX_S16) ? r_usado : (r_usado + suma_total);
-      applyGroupFlow(g, r_usado, getTargetForIdx);
+      const getTargetForIdx = (idx) => {
+        if (idx === IDX_S1 || idx === IDX_S16) return baseSignedR;
+        return baseSignedR + suma_total;
+      };
+
+      applyGroupFlow(g, baseSignedR, getTargetForIdx);
       finalizeGroupStep(g, true);
     }
     state.r_iniciales_previos = state.r_iniciales.slice();
@@ -1265,18 +1481,16 @@
     for (let g = 0; g < GROUPS; g++) {
       const r_random_actual = state.r_iniciales[g];
       acumulado_random_actual += r_random_actual;
-
-      const inv = calcular_inversion_CU(acumulado_random_actual + state.r_iniciales_previos[g], 'sin');
-      const r_usado = inv ? inv.r : r_random_actual;
+      const baseSignedR = buildBaseSignedR(g, acumulado_random_actual + state.r_iniciales_previos[g], r_random_actual);
 
       const getTargetForIdx = (idx) => {
-        if (idx === IDX_S1 || idx === IDX_S16) return r_usado;
+        if (idx === IDX_S1 || idx === IDX_S16) return baseSignedR;
         let suma_total = 0.0;
         for (let k = 0; k <= idx; k++) suma_total += suma_si_anterior[k];
-        return r_usado + suma_total;
+        return baseSignedR + suma_total;
       };
 
-      applyGroupFlow(g, r_usado, getTargetForIdx);
+      applyGroupFlow(g, baseSignedR, getTargetForIdx);
       finalizeGroupStep(g, true);
     }
     state.r_iniciales_previos = state.r_iniciales.slice();
@@ -1291,19 +1505,17 @@
     for (let g = 0; g < GROUPS; g++) {
       const r_random_actual = state.r_iniciales[g];
       acumulado_random_actual += r_random_actual;
-
-      const inv = calcular_inversion_CU(acumulado_random_actual + state.r_iniciales_previos[g], 'sin');
-      const r_usado = inv ? inv.r : r_random_actual;
+      const baseSignedR = buildBaseSignedR(g, acumulado_random_actual + state.r_iniciales_previos[g], r_random_actual);
 
       const getTargetForIdx = (idx) => {
-        if (idx === IDX_S1 || idx === IDX_S16) return r_usado;
+        if (idx === IDX_S1 || idx === IDX_S16) return baseSignedR;
         let suma_total = 0.0;
         for (let k = 0; k <= idx; k++) suma_total += suma_si_anterior[k];
         if (state.vuelta_actual >= 3) suma_total += state.si_valores_previos[g][idx];
-        return r_usado + suma_total;
+        return baseSignedR + suma_total;
       };
 
-      applyGroupFlow(g, r_usado, getTargetForIdx);
+      applyGroupFlow(g, baseSignedR, getTargetForIdx);
       finalizeGroupStep(g, true);
     }
     state.r_iniciales_previos = state.r_iniciales.slice();
@@ -1317,19 +1529,17 @@
     for (let g = 0; g < GROUPS; g++) {
       const r_random_actual = state.r_iniciales[g];
       acumulado_random_actual += r_random_actual;
-
-      const inv = calcular_inversion_CU(acumulado_random_actual + state.r_iniciales_previos[g], 'sin');
-      const r_usado = inv ? inv.r : r_random_actual;
+      const baseSignedR = buildBaseSignedR(g, acumulado_random_actual + state.r_iniciales_previos[g], r_random_actual);
 
       const getTargetForIdx = (idx) => {
-        if (idx === IDX_S1 || idx === IDX_S16) return r_usado;
+        if (idx === IDX_S1 || idx === IDX_S16) return baseSignedR;
         let suma_total = 0.0;
         for (let k = 0; k <= idx; k++) suma_total += suma_si_anterior[k];
         suma_total += state.si_valores_previos[g][idx];
-        return r_usado + suma_total;
+        return baseSignedR + suma_total;
       };
 
-      applyGroupFlow(g, r_usado, getTargetForIdx);
+      applyGroupFlow(g, baseSignedR, getTargetForIdx);
       finalizeGroupStep(g, true);
     }
     state.r_iniciales_previos = state.r_iniciales.slice();
@@ -1339,17 +1549,16 @@
     const prev = state.si_valores_previos.map(row => row.slice());
     for (let g = 0; g < GROUPS; g++) {
       const base = state.r_iniciales[g] + prev[g][IDX_S16] + state.r_iniciales_previos[g];
-      const inv = calcular_inversion_CU(base, 'sin');
-      const r_usado = inv ? inv.r : base;
+      const baseSignedR = buildBaseSignedR(g, base, state.r_iniciales[g]);
 
       const getTargetForIdx = (idx) => {
-        if (idx === IDX_S1 || idx === IDX_S16) return r_usado;
+        if (idx === IDX_S1 || idx === IDX_S16) return baseSignedR;
         let suma_interna = 0.0;
         for (let k = 0; k <= idx; k++) suma_interna += prev[g][k];
-        return r_usado + suma_interna;
+        return baseSignedR + suma_interna;
       };
 
-      applyGroupFlow(g, r_usado, getTargetForIdx);
+      applyGroupFlow(g, baseSignedR, getTargetForIdx);
     }
     finalizeMultiGroupStep();
   }
@@ -1359,15 +1568,14 @@
     for (let g = 0; g < GROUPS; g++) {
       const left = (g - 1 + GROUPS) % GROUPS;
       const base = state.r_iniciales[g] + prev[left][IDX_S1] + state.r_iniciales_previos[g];
-      const inv = calcular_inversion_CU(base, 'sin');
-      const r_usado = inv ? inv.r : base;
+      const baseSignedR = buildBaseSignedR(g, base, state.r_iniciales[g]);
 
       const getTargetForIdx = (idx) => {
-        if (idx === IDX_S1 || idx === IDX_S16) return r_usado;
-        return r_usado + prev[left][idx];
+        if (idx === IDX_S1 || idx === IDX_S16) return baseSignedR;
+        return baseSignedR + prev[left][idx];
       };
 
-      applyGroupFlow(g, r_usado, getTargetForIdx);
+      applyGroupFlow(g, baseSignedR, getTargetForIdx);
     }
     finalizeMultiGroupStep();
   }
@@ -1376,16 +1584,15 @@
     const prev = state.si_valores_previos.map(row => row.slice());
     for (let g = 0; g < GROUPS; g++) {
       const base = state.r_iniciales[g] + prev[g][IDX_S16] + state.r_iniciales_previos[g];
-      const inv = calcular_inversion_CU(base, 'sin');
-      const r_usado = inv ? inv.r : base;
+      const baseSignedR = buildBaseSignedR(g, base, state.r_iniciales[g]);
 
       const getTargetForIdx = (idx) => {
-        if (idx === IDX_S1 || idx === IDX_S16) return r_usado;
+        if (idx === IDX_S1 || idx === IDX_S16) return baseSignedR;
         const sym = 15 - idx;
-        return r_usado + prev[g][idx] + prev[g][sym];
+        return baseSignedR + prev[g][idx] + prev[g][sym];
       };
 
-      applyGroupFlow(g, r_usado, getTargetForIdx);
+      applyGroupFlow(g, baseSignedR, getTargetForIdx);
     }
     finalizeMultiGroupStep();
   }
@@ -1429,9 +1636,10 @@
   // ===== Ralentizador =====
   function computeRalentizadorMs() {
     if (!state.ralentizar_activo) { state.valor_ralentizador_ms = 0; return; }
-    let suma_s16 = 0.0; for (let g = 0; g < GROUPS; g++) suma_s16 += state.groups[g][15].total_value;
-    const inv = calcular_inversion_CU(suma_s16, '(sin(r) * e^(-r^2)) / (1 + r^2)');
-    state.valor_ralentizador_ms = inv ? clamp(inv.r * 100, 16, 2000) : 1000;
+    let suma_s16 = 0.0;
+    for (let g = 0; g < GROUPS; g++) suma_s16 += state.groups[g][IDX_S16].total_value;
+    const promedio = suma_s16 / GROUPS;
+    state.valor_ralentizador_ms = clamp(180 + (Math.abs(Math.tanh(promedio)) * 900), 16, 2000);
   }
 
   // ===== Dibujo =====
